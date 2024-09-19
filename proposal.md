@@ -3,3 +3,4 @@ The project is a multiplayer online checkers game. The front-end will be written
 	
  We plan to use Socket.io to handle the networking during the game. This should give us the ability to have a client wait for the server to provide information about the opponent’s move. We will store the win/loss records in MongoDB, but the active game state will not be stored. This makes it so that if the server dies, any active games also die, which we have decided is a better option. 
 
+![Proposal Layout](ProposalCheckers.png "Proposal Layout")
