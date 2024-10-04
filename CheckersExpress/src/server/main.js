@@ -94,7 +94,8 @@ const requireAuth = (req, res, next) => {
   if (req.session.login) {
     next();
   } else {
-    res.redirect("/index.html");
+    console.log("requireAuth caught unauthorized user");
+    res.status(401).send("Not authorized");
   }
 };
 
@@ -102,8 +103,16 @@ const requireAuth = (req, res, next) => {
 app.post("/logout", requireAuth, (req, res) => {
   req.session = null;
   console.log("User logged out");
-  res.redirect("/index.html");
+  res.status(401).send("Logged out");
 });
+
+app.get("/data", requireAuth, (req, res) => {
+  if (req.session.login) {
+    res.status(200).send();
+  } else {
+    res.status(401).send();
+  }
+})
 
 
 
