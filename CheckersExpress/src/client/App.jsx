@@ -20,10 +20,14 @@ function App() {
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <button onClick={() => fetch("/login", {
+        <button onClick={() => fetch("/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: "bill", password: "2" }),
+        }).then(response => {
+          if (response.status == 201) {
+            window.location.assign("localhost:3000/browser.html");
+          }
         })}>Register</button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR!

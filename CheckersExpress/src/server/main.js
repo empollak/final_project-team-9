@@ -4,24 +4,21 @@ import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import cookie from "cookie-session";
 import compression from "compression";
-// const express = require("express"),
-//   { MongoClient, ObjectId } = require("mongodb"),
-//   cookie = require("cookie-session"),
-//   app = express(),
-//   compression = require("compression");
+
 
 const app = express();
 
 app.use(compression());
 app.use(express.json());
+// app.get("/browser.html", (req, res) => {
+//   res.sendFile("browser.html", { root: "." });
+// });
 
-app.get("/", (req, res) => {
-  res.sendFile("index.html", { root: "." });
-});
+// app.get("/", (req, res) => {
+//   res.sendFile("index.html", { root: "." });
+// });
 
-app.get("/browser.html", (req, res) => {
-  res.sendFile("browser .html", { root: "." });
-});
+
 
 // app.use(express.static("."));
 
@@ -31,9 +28,10 @@ app.get("/browser.html", (req, res) => {
 app.use(express.urlencoded({ extended: true }));
 
 
-const uri = `mongodb+srv://${process.env.USER}:${process.env.PASS}@${process.env.HOST}`;
-const client = new MongoClient(uri);
+const uri = `mongodb+srv://server:${process.env.PASS}@${process.env.HOST}`;
 console.log(uri);
+const client = new MongoClient(uri);
+console.log("hello");
 
 // cookie middleware! The keys are used for encryption and should be
 // changed
@@ -58,7 +56,6 @@ app.post("/register", async (req, res) => {
         username: username,
         password: hashedPassword,
       });
-
       res.status(201).send("User registered successfully.");
     } catch (error) {
       console.error("Error during registration:", error);
@@ -71,6 +68,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log("got login request for user ", username, " pw ", password);
   async function authenticate() {
     try {
       const authnDB = client.db("checkers").collection("users");
@@ -78,10 +76,10 @@ app.post("/login", async (req, res) => {
       if (user && password === user.password) {
         req.session.login = true;
         req.session.userId = user._id.toString();
-        res.redirect("/browser.html");
+        res.status(201).send();
       } else {
         console.log("Incorrect credentials");
-        res.redirect("/index.html");
+        res.status(401).send();
       }
     } catch (error) {
       console.error("Error during authentication:", error);
