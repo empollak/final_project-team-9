@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         return redirect("/");
       } else {
         console.log("auth'd, code ", response.status);
-        return null;
+        return io();
       }
       // await fetch server data
       // if not logged in, return redirect to login

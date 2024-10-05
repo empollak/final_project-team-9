@@ -4,9 +4,12 @@ import express from "express";
 import { MongoClient, ObjectId } from "mongodb";
 import cookie from "cookie-session";
 import compression from "compression";
-
+import { Server } from "socket.io";
+import { createServer } from 'http';
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
 app.use(compression());
 app.use(express.json());
@@ -18,6 +21,10 @@ app.use(express.json());
 //   res.sendFile("index.html", { root: "." });
 // });
 
+// app.use("/src/client", express.static("src/client"))
+// app.get("/", (req, res) => {
+//   res.redirect("/index.html");
+// });
 
 
 // app.use(express.static("."));
@@ -31,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 const uri = `mongodb+srv://server:${process.env.PASS}@${process.env.HOST}`;
 console.log(uri);
 const client = new MongoClient(uri);
-console.log("hello");
+// console.log("hello");
 
 // cookie middleware! The keys are used for encryption and should be
 // changed
@@ -107,15 +114,18 @@ app.post("/logout", requireAuth, (req, res) => {
 });
 
 app.get("/data", requireAuth, (req, res) => {
-  if (req.session.login) {
-    res.status(200).send();
-  } else {
-    res.status(401).send();
-  }
+  res.status(200).send();
 })
 
+io.on('connection', (socket) => {
+  socket.on("message", (msg) => {
+    console.log("message: " + msg);
+  })
+  console.log('a user connected');
+});
 
-
-ViteExpress.listen(app, 3000, () =>
+server.listen(3000, () =>
   console.log("Server is listening on port 3000..."),
 );
+
+ViteExpress.bind(app, server);
