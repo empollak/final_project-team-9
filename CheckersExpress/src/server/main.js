@@ -6,10 +6,12 @@ import cookie from "cookie-session";
 import compression from "compression";
 import { Server } from "socket.io";
 import { createServer } from 'http';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
+const saltRounds = 10;
 
 app.use(compression());
 app.use(express.json());
@@ -45,9 +47,16 @@ const client = new MongoClient(uri);
 app.use(
   cookie({
     name: "session",
-    keys: ["key1", "key2"],
+    keys: ["NMGwPsSJoXMuG3PMMlLaRovinvxfg9k5", "eZUaeH4PboBbTzGpAHTmrCIXV6tZRHHz"], // hardcoded :P
   })
 );
+
+try {
+  await client.connect();
+  console.log("Connected to MongoDB");
+} catch (err) {
+  console.error("Connection error", err);
+}
 
 
 app.post("/register", async (req, res) => {
@@ -57,7 +66,7 @@ app.post("/register", async (req, res) => {
   async function registerUser() {
     try {
       const authnDB = client.db("checkers").collection("users");
-      const hashedPassword = password; //come back and hash this
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       const result = await authnDB.insertOne({
         username: username,
@@ -80,14 +89,20 @@ app.post("/login", async (req, res) => {
     try {
       const authnDB = client.db("checkers").collection("users");
       const user = await authnDB.findOne({ username: username });
-      if (user && password === user.password) {
+      if (user) {
+        const match = await bcrypt.compare(password, user.password);
+        if (match) {
         req.session.login = true;
         req.session.userId = user._id.toString();
-        res.status(201).send();
+        res.status(201).send(); // correct credentials
       } else {
-        console.log("Incorrect credentials");
-        res.status(401).send();
+        console.log("Incorrect credentials"); 
+        res.status(401).send(); // incorrect credentials
       }
+    } else {
+      console.log("Incorrect credentials"); // we shan't be overly informative with error messages for security reasons
+      res.status(401).send(); // user not found
+    }
     } catch (error) {
       console.error("Error during authentication:", error);
     }
