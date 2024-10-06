@@ -20,7 +20,7 @@ app.use(express.json());
 // or GET requests
 app.use(express.urlencoded({ extended: true }));
 
-const uri = `mongodb+srv://administrator:${process.env.PASS}@${process.env.HOST}`; //change back to server for push
+const uri = `mongodb+srv://${process.env.MONGOUSER}:${process.env.PASS}@${process.env.HOST}`; //change back to server for push
 console.log(uri);
 const client = new MongoClient(uri);
 
@@ -72,17 +72,17 @@ app.post("/login", async (req, res) => {
       if (user) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-        req.session.login = true;
-        req.session.userId = user._id.toString();
-        res.status(201).send(); // correct credentials
+          req.session.login = true;
+          req.session.userId = user._id.toString();
+          res.status(201).send(); // correct credentials
+        } else {
+          console.log("Incorrect credentials");
+          res.status(401).send(); // incorrect credentials
+        }
       } else {
-        console.log("Incorrect credentials"); 
-        res.status(401).send(); // incorrect credentials
+        console.log("Incorrect credentials"); // we shan't be overly informative with error messages for security reasons
+        res.status(401).send(); // user not found
       }
-    } else {
-      console.log("Incorrect credentials"); // we shan't be overly informative with error messages for security reasons
-      res.status(401).send(); // user not found
-    }
     } catch (error) {
       console.error("Error during authentication:", error);
     }
@@ -114,8 +114,10 @@ app.get("/data", requireAuth, (req, res) => {
 
 const games = {}; // hold all our games
 
-io.on('connection', (gameCode) => {
+io.on('connection', (socket) => {
   socket.on("joinGame", (msg) => {
+    let gameCode = msg;
+    console.log("got joinGame request from id ", socket.id, " code ", gameCode);
     // if game not full, make a new game
     if (!games[gameCode]) {
       games[gameCode] = { players: [], maxPlayers: 2 };
@@ -124,23 +126,69 @@ io.on('connection', (gameCode) => {
     // if less than two players, join game
     if (games[gameCode].players.length < games[gameCode].maxPlayers) {
       games[gameCode].players.push(socket.id);
-      socket.join(gameCode);
+      socket.gameCode = gameCode; // legal?
 
       // tell user they successfully joined
-      socket.emit("gameJoined", { gameCode });
-      console.log(`Player joined game ${gameCode}`);
+      socket.join(gameCode);
+      socket.emit("gameJoined", gameCode);
 
+      // Start the game if it is full!
+      if (games[gameCode].players.length == games[gameCode].maxPlayers) {
+        console.log("Starting game! ", gameCode);
+        io.to(gameCode).emit("gameStarted");
+      } else {
+        console.log("Player joined game but is waiting ", gameCode);
+        io.to(gameCode).emit("gameWaiting")
+      }
     } else {
       // tell user the game is full
       socket.emit("gameFull", { gameCode });
       console.log(`Game ${gameCode} is full`);
     }
   })
+
+  // socket.on("leaveGame", (gameCode) => {
+  //   if (!games[gameCode]) {
+  //     console.log("Player tried to leave nonexistent game ", gameCode);
+  //     return;
+  //   }
+
+  //   // Find this player in the game's players list and remove them
+  //   const index = games[gameCode].players.indexOf(socket.id);
+  //   if (index > -1) {
+  //     socket.leave(gameCode);
+  //     games[gameCode].players.splice(index, 1); // Remove just this player
+  //     console.log("Player left game ", gameCode);
+  //   } else {
+  //     console.log("Player id ", socket.id, " attempted to leave game they were not in ", gameCode);
+  //   }
+  // })
+
+  socket.on("count", (gameCode, count) => {
+    socket.to(gameCode).emit("count", count);
+  })
+
+  socket.on("disconnect", () => {
+    let gameCode = socket.gameCode;
+    console.log("Handling disconnect, gameCode", gameCode);
+    if (gameCode) {
+      const index = games[gameCode].players.indexOf(socket.id);
+      if (index > -1) {
+        socket.leave(gameCode);
+        io.to(gameCode).emit("gameOver", "Other user disconnected");
+        delete games[gameCode];
+        // games[gameCode].players.splice(index, 1); // Remove just this player
+        console.log("Player left game ", gameCode);
+      } else {
+        console.log("Player id ", socket.id, " attempted to leave game they were not in ", gameCode);
+      }
+    }
+  })
   console.log('a user connected');
 });
 
-io.on("disconnect", () => {
-  console.log('user disconnected');
+io.on("disconnect", (socket) => {
+  console.log('user disconnected', socket.id);
   // handle disconnection
 });
 

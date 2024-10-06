@@ -5,12 +5,14 @@ import ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
   RouterProvider,
-  redirect
+  redirect,
+  useLoaderData
 } from "react-router-dom";
 
 import { LoginPage, login } from "./routes/login"
 import ErrorPage from "./error-page";
 import Browser from "./routes/browser";
+
 
 const router = createBrowserRouter([
   {
@@ -37,15 +39,15 @@ const router = createBrowserRouter([
       // await fetch server data
       // if not logged in, return redirect to login
     },
-    action: async () => {
-      await fetch("/logout", { method: "POST" });
-      console.log("redirecting");
-      return redirect("/");
-    }
-  }
+  },
+  // {
+  //   path: "/game",
+  //   element: <Game socket={socket} />,
+  // }
 ]);
 
 import App from "./App";
+import Game from "./routes/game";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

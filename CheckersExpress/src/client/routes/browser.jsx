@@ -1,22 +1,36 @@
-import { Form, useLoaderData } from "react-router-dom"
+import { Form, useLoaderData, useNavigate } from "react-router-dom"
 import { useEffect } from "react";
 import { useState } from "react";
+import LogoutButton from "../LogoutButton";
+import Game from "./game";
 
 export default function Browser() {
     const socket = useLoaderData();
-    socket.emit("message", "hello");
+    // const navigate = useNavigate();
     const [gameCode, setGameCode] = useState("");
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameJoined, setGameJoined] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Joining game ", gameCode);
         socket.emit("joinGame", gameCode);
     };
 
     useEffect(() => {
-        socket.on("gameJoined", ({ gameCode }) => {
-            alert(`Successfully joined game: ${gameCode}`);
-            // redirect to game room
+        socket.on("gameJoined", (gameCode) => {
+            // alert(`Successfully joined game: ${gameCode}`);
+
+            // Give the game the socket and game code
+            setGameJoined(true);
+            setGameCode(gameCode);
+            // navigate("/game", { state: { gameCode: gameCode } });
         });
+
+        socket.on("gameStarted", () => {
+            console.log("Game started!");
+            setGameStarted(true);
+        })
 
         socket.on("gameFull", ({ gameCode }) => {
             alert(`Game ${gameCode} is full. Please try another game code.`);
@@ -27,24 +41,24 @@ export default function Browser() {
             socket.off("gameFull");
         };
     }, [socket]);
-    
+
     return (
         <>
-            <h1>Welcome to Checkers!</h1>
-            <h2>Enter a game code to join:</h2>
-            <Form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder="Game code" 
-                    value={gameCode} 
-                    onChange={(e) => setGameCode(e.target.value)} 
-                />
-                <button type="submit">Submit</button>
-            </Form>
-            <br></br>
-            <Form method="post">
-                <button type="submit">Log out</button>
-            </Form>
+            <LogoutButton socket={socket}></LogoutButton>
+
+            {!gameJoined ? <>
+                <h1>Welcome to Checkers!</h1>
+                <h2>Enter a game code to join:</h2>
+                <Form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Game code"
+                        value={gameCode}
+                        onChange={(e) => setGameCode(e.target.value)}
+                    />
+                    <button type="submit">Submit</button>
+                </Form>
+                <br></br></> : <Game socket={socket} gameStarted={gameStarted} gameCode={gameCode} setGameJoined={setGameJoined} setGameStarted={setGameStarted} />}
         </>
     )
 }
