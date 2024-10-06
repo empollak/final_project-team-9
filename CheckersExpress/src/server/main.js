@@ -136,9 +136,6 @@ io.on('connection', (socket) => {
       if (games[gameCode].players.length == games[gameCode].maxPlayers) {
         console.log("Starting game! ", gameCode);
         io.to(gameCode).emit("gameStarted");
-      } else {
-        console.log("Player joined game but is waiting ", gameCode);
-        io.to(gameCode).emit("gameWaiting")
       }
     } else {
       // tell user the game is full
@@ -147,23 +144,7 @@ io.on('connection', (socket) => {
     }
   })
 
-  // socket.on("leaveGame", (gameCode) => {
-  //   if (!games[gameCode]) {
-  //     console.log("Player tried to leave nonexistent game ", gameCode);
-  //     return;
-  //   }
-
-  //   // Find this player in the game's players list and remove them
-  //   const index = games[gameCode].players.indexOf(socket.id);
-  //   if (index > -1) {
-  //     socket.leave(gameCode);
-  //     games[gameCode].players.splice(index, 1); // Remove just this player
-  //     console.log("Player left game ", gameCode);
-  //   } else {
-  //     console.log("Player id ", socket.id, " attempted to leave game they were not in ", gameCode);
-  //   }
-  // })
-
+  // Rebrodcast count update to relevant sockets (except the one it came from)
   socket.on("count", (gameCode, count) => {
     socket.to(gameCode).emit("count", count);
   })
@@ -177,7 +158,6 @@ io.on('connection', (socket) => {
         socket.leave(gameCode);
         io.to(gameCode).emit("gameOver", "Other user disconnected");
         delete games[gameCode];
-        // games[gameCode].players.splice(index, 1); // Remove just this player
         console.log("Player left game ", gameCode);
       } else {
         console.log("Player id ", socket.id, " attempted to leave game they were not in ", gameCode);
