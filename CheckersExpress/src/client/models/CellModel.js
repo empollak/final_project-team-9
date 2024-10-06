@@ -1,6 +1,6 @@
 import { Labels } from './enums';
 import { BoardModel } from './BoardModel';
-import { TokenModel } from 'models/TokenModel';
+import { TokenModel } from './TokenModel';
 
 class CellModel {
     x;

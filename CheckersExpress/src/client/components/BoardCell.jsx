@@ -1,9 +1,12 @@
 import React, { ReactElement } from 'react';
-import './Cell.css';
-import { mergeClasses } from 'utils/utils';
-import { CellModel } from 'models/CellModel';
-import { Letters } from 'models/Letters';
+// import './Cell.css';
+// import { mergeClasses } from 'utils/utils';
+import { CellModel } from '../models/CellModel';
+import { Letters } from '../models/enums';
 
+const mergeClasses = (...rest ) => {
+    return rest.join(' ');
+};
 // type CellProps = {
 //     cell: CellModel;
 //     rowIndex: number;

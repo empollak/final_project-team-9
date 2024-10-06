@@ -1,13 +1,14 @@
 import React, { Fragment, ReactElement, useEffect, useState } from 'react';
-import './Board.css';
-import { Cell } from '../Cell';
-import { BoardModel } from 'models/BoardModel';
-import { CellModel } from 'models/CellModel';
-import { PlayerModel } from 'models/PlayerModel';
+// import './Board.css';
+import { Cell } from './BoardCell';
+import { BoardModel } from '../models/BoardModel';
+import { CellModel } from '../models/CellModel';
+import { PlayerModel } from '../models/PlayerModel';
 
 export default function Board({ board, currentPlayer, onChangePlayer, onSetBoard }){
 
-    const [selected, setSelected] = useState<CellModel | null>(null);
+    let selected = null;
+    const setSelected = (newSelected) => {selected = newSelected;};
 
     const updateBoard = () => {
         const updatedBoard = board.getNewBoard();

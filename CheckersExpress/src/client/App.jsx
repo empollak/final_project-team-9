@@ -1,32 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
+import Board from "./components/Board";
+import { BoardModel } from './models/BoardModel';
+import { PlayerModel } from './models/PlayerModel';
+import { Labels } from './models/enums';
+
 
 function App() {
   const [count, setCount] = useState(0);
+  let board = new BoardModel();
+  const setBoard = (newBoard) => {board = newBoard;};
+  const lightPlayer = new PlayerModel(Labels.Light);
+  const darkPlayer = new PlayerModel(Labels.Dark);
+  let currentPlayer = lightPlayer;
+  const setCurrentPlayer = (newPlayer) => {currentPlayer = nnewPlayerewBoard;};
+
+  const restart = () => {
+      const newBoard = new BoardModel();
+      newBoard.createCells();
+      newBoard.addFigures();
+      setBoard(newBoard);
+      setCurrentPlayer(lightPlayer);
+  };
+
+  const changePlayer = () => {
+      setCurrentPlayer(currentPlayer?.label === Labels.Light ? darkPlayer : lightPlayer);
+  };
+
+  useEffect(() => {
+      restart();
+  }, []);
+
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR!
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Board board={board} currentPlayer={currentPlayer} onChangePlayer={changePlayer} setBoard={setBoard}/>
     </div>
   );
 }

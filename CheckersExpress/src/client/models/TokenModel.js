@@ -1,7 +1,7 @@
 import { Labels, TokenNames } from './enums';
 import { CellModel } from './CellModel';
-import pieceImgLight from 'images/light.svg';
-import pieceImgDark from 'images/brown.svg';
+import pieceImgLight from '../assets/light.svg';
+import pieceImgDark from '../assets/brown.svg';
 
 class TokenModel {
     label;
@@ -24,4 +24,4 @@ class TokenModel {
     }
 }
 
-export { FigureModel };
+export { TokenModel };

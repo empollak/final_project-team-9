@@ -1,6 +1,6 @@
 import { CellModel } from './CellModel';
 import { Labels } from './enums';
-import { TokenModel } from 'models/TokenModel';
+import { TokenModel } from './TokenModel';
 
 class BoardModel {
     cells = []; // 2D Array
