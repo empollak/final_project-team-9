@@ -15,35 +15,16 @@ const saltRounds = 10;
 
 app.use(compression());
 app.use(express.json());
-// app.get("/browser.html", (req, res) => {
-//   res.sendFile("browser.html", { root: "." });
-// });
-
-// app.get("/", (req, res) => {
-//   res.sendFile("index.html", { root: "." });
-// });
-
-// app.use("/src/client", express.static("src/client"))
-// app.get("/", (req, res) => {
-//   res.redirect("/index.html");
-// });
-
-
-// app.use(express.static("."));
-
 
 // use express.urlencoded to get data sent by defaut form actions
 // or GET requests
 app.use(express.urlencoded({ extended: true }));
 
-
-const uri = `mongodb+srv://server:${process.env.PASS}@${process.env.HOST}`;
+const uri = `mongodb+srv://administrator:${process.env.PASS}@${process.env.HOST}`; //change back to server for push
 console.log(uri);
 const client = new MongoClient(uri);
-// console.log("hello");
 
-// cookie middleware! The keys are used for encryption and should be
-// changed
+// cookie middleware
 app.use(
   cookie({
     name: "session",
@@ -57,7 +38,6 @@ try {
 } catch (err) {
   console.error("Connection error", err);
 }
-
 
 app.post("/register", async (req, res) => {
   console.log("got request");
@@ -111,7 +91,7 @@ app.post("/login", async (req, res) => {
   authenticate();
 });
 
-// add some middleware that always sends unauthenicaetd users to the login page
+// middleware that always sends unauthenicated users to the login page
 const requireAuth = (req, res, next) => {
   if (req.session.login) {
     next();
@@ -132,11 +112,36 @@ app.get("/data", requireAuth, (req, res) => {
   res.status(200).send();
 })
 
-io.on('connection', (socket) => {
-  socket.on("message", (msg) => {
-    console.log("message: " + msg);
+const games = {}; // hold all our games
+
+io.on('connection', (gameCode) => {
+  socket.on("joinGame", (msg) => {
+    // if game not full, make a new game
+    if (!games[gameCode]) {
+      games[gameCode] = { players: [], maxPlayers: 2 };
+    }
+
+    // if less than two players, join game
+    if (games[gameCode].players.length < games[gameCode].maxPlayers) {
+      games[gameCode].players.push(socket.id);
+      socket.join(gameCode);
+
+      // tell user they successfully joined
+      socket.emit("gameJoined", { gameCode });
+      console.log(`Player joined game ${gameCode}`);
+
+    } else {
+      // tell user the game is full
+      socket.emit("gameFull", { gameCode });
+      console.log(`Game ${gameCode} is full`);
+    }
   })
   console.log('a user connected');
+});
+
+io.on("disconnect", () => {
+  console.log('user disconnected');
+  // handle disconnection
 });
 
 server.listen(3000, () =>
