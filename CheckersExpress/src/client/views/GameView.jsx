@@ -40,10 +40,10 @@ export default function GameBoard({board}) {
     }
 
     // draw tokens
-    return <>
+    return <div>
         {
             [... Array(8)].map((gridRow, rowIndex) => {
-                return <div key={"row:"+rowIndex} style={{}}>
+                return <div className="" key={"row:"+rowIndex} style={{}}>
                     {
                         [... Array(8)].map((gridCell, colIndex) => {
                             return <button className="square" 
@@ -60,5 +60,5 @@ export default function GameBoard({board}) {
                 </div>
             })
         }
-    </>
+    </div>
 }

@@ -33,7 +33,7 @@ const allPlayerMoves = function(board) {
 }
 
 export const tokenAt = function(board, row, col) {
-    const index = positionToIndex(row, col);
+    const index = positionToIndex(col, row);
     return board.boardState[index];
 };
 
