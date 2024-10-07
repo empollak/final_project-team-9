@@ -1,6 +1,6 @@
 //game rendering
 
-export default function redrawBoard(board) {
+export default function RedrawBoard(board) {
     const ctx = canvasObj.getContext('2d')
     
     // clear the canvas area before rendering elements again
