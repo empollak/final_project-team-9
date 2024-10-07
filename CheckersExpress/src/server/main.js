@@ -40,7 +40,7 @@ try {
 }
 
 app.post("/register", async (req, res) => {
-  console.log("got request");
+  console.log("Got registration request");
   const { username, password } = req.body;
 
   async function registerUser() {
@@ -71,7 +71,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  console.log("got login request for user ", username, " pw ", password);
+  console.log("Login request for user", username, "with password", password);
   async function authenticate() {
     try {
       const authnDB = client.db("checkers").collection("users");
@@ -103,7 +103,7 @@ const requireAuth = (req, res, next) => {
   if (req.session.login) {
     next();
   } else {
-    console.log("requireAuth caught unauthorized user");
+    console.log("RequireAuth caught unauthorized user");
     res.status(401).send("Not authorized");
   }
 };
@@ -122,9 +122,10 @@ app.get("/data", requireAuth, (req, res) => {
 const games = {}; // hold all our games
 
 io.on('connection', (socket) => {
+  console.log('A user connected to the socket');
   socket.on("joinGame", (msg) => {
     let gameCode = msg;
-    console.log("got joinGame request from id ", socket.id, " code ", gameCode);
+    console.log("JoinGame request from id", socket.id, "and game code", gameCode);
     // if game not full, make a new game
     if (!games[gameCode]) {
       games[gameCode] = { players: [], maxPlayers: 2 };
@@ -141,7 +142,7 @@ io.on('connection', (socket) => {
 
       // Start the game if it is full!
       if (games[gameCode].players.length == games[gameCode].maxPlayers) {
-        console.log("Starting game! ", gameCode);
+        console.log("Starting game", gameCode);
         io.to(gameCode).emit("gameStarted");
       }
     } else {
@@ -159,7 +160,7 @@ io.on('connection', (socket) => {
   socket.on("disconnect", () => {
     let gameCode = socket.gameCode;
     console.log("Handling disconnect, gameCode", gameCode);
-    if (gameCode) {
+    if (gameCode && games[gameCode]) {
       const index = games[gameCode].players.indexOf(socket.id);
       if (index > -1) {
         socket.leave(gameCode);
@@ -167,15 +168,14 @@ io.on('connection', (socket) => {
         delete games[gameCode];
         console.log("Player left game ", gameCode);
       } else {
-        console.log("Player id ", socket.id, " attempted to leave game they were not in ", gameCode);
+        console.log("Player id", socket.id, "attempted to leave game they were not in ", gameCode);
       }
     }
   })
-  console.log('a user connected');
 });
 
 io.on("disconnect", (socket) => {
-  console.log('user disconnected', socket.id);
+  console.log('User disconnected from socket', socket.id);
   // handle disconnection
 });
 
