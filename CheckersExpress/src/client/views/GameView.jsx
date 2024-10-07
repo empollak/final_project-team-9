@@ -1,8 +1,9 @@
 import {useState, useEffect} from "react";
 import "../styles/GameStyle.css"
+import {indexToPosition, positionToIndex, tokenAt} from "../controllers/GameController"
 //game rendering
 
-export default function GameBoard(board) {
+export default function GameBoard({board}) {
     // const ctx = canvasObj.getContext('2d')
     
     // // clear the canvas area before rendering elements again
@@ -51,7 +52,8 @@ export default function GameBoard(board) {
                                     style={{ 
                                         backgroundColor: squareColor(rowIndex, colIndex),
                                     }}> 
-                                        <img src={board.tokenAt(rowIndex,colIndex)?.imgSource} />
+                                        <img className="square" 
+                                             src={tokenAt(board,rowIndex,colIndex)?.imgSource()}/>
                                     </button>
                         })
                     }

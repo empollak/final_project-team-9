@@ -32,19 +32,24 @@ const allPlayerMoves = function(board) {
     return null;
 }
 
+export const tokenAt = function(board, row, col) {
+    const index = positionToIndex(row, col);
+    return board.boardState[index];
+};
+
 export const indexToPosition = function(index) {
     // Plus 1 bc 1-based indexing
-    yVal = Math.floor(index/4)+1;
+    const yVal = Math.floor(index/4)+1;
     // Every other line has an offset of 1
-    xOffset = yVal % 2;
-    xVal = (index % 4)*2 + xOffset + 1;
+    const xOffset = yVal % 2;
+    const xVal = (index % 4)*2 + xOffset + 1;
 
     return xVal, yVal;
 }
 
 export const positionToIndex = function(x, y) {
-    xOffset = yVal % 2;
-    index = yVal * 4 + (xVal - xOffset)/2;
+    const xOffset = y % 2;
+    const index = y * 4 + (x - xOffset)/2;
     
     return index;
 }

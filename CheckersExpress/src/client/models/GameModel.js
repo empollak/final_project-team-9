@@ -1,5 +1,3 @@
-import {indexToPosition, positionToIndex} from "../controllers/GameController"
-
 //persistant memory
 
 // Tokens store their own position, title, and color
@@ -20,15 +18,33 @@ export class Token {
     softCopy = function(newIndex) {
         return new Token(newIndex, this.isMonarch, this.color);
     }
+    imgSource = function() {
+        if (this.color == "b"){
+            if (this.isMonarch){
+                return "dark_monarch.png";
+            } else {
+                return "dark_piece.png";
+            }
+        } else {
+            if (this.isMonarch){
+                return "light_monarch.png";
+            } else {
+                return "light_piece.png";
+            } 
+        }
+    }
 }
 const redToken = new Token(0, false, "r")
 const blackToken = new Token(0, false, "b")
 
 
 export class Board {
-
+    boardState;
+    selected;
+    currentPlayer;
+    
     constructor() {
-        this.squares = [];
+        this.boardState = [];
         this.selected = null;
         this.currentPlayer = 1;
         this.resetBoard();
@@ -47,11 +63,6 @@ export class Board {
                 this.boardState.push(null);
             }
         }
-    };
-
-    tokenAt = function(row, col) {
-        index = positionToIndex(row, col);
-        return this.boardState[index];
     };
 
 };
