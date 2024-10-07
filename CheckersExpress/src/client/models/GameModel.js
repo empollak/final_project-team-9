@@ -1,3 +1,5 @@
+import {indexToPosition, positionToIndex} from "../controllers/GameController"
+
 //persistant memory
 
 // Tokens store their own position, title, and color
@@ -24,30 +26,35 @@ const blackToken = new Token(0, false, "b")
 
 
 export class Board {
-    constructor(config) {
+
+    constructor() {
         this.squares = [];
-        this.size = parseInt(config.numColumns);
         this.selected = null;
         this.currentPlayer = 1;
         this.resetBoard();
-    }
+    };
 
     resetBoard = function() {
         this.boardState = [];
         for(var i = 0; i < 32; i++) {
             if(i < 12) {
-                this.boardState.append(redToken.softCopy(i));    
+                this.boardState.push(redToken.softCopy(i));    
             }
             else if(i >= 20) {
-                this.boardState.append(blackToken.softCopy(i));
+                this.boardState.push(blackToken.softCopy(i));
             }
             else {
-                this.boardState.append(null);
+                this.boardState.push(null);
             }
         }
-    }
+    };
 
-}
+    tokenAt = function(row, col) {
+        index = positionToIndex(row, col);
+        return this.boardState[index];
+    };
+
+};
 
 
 // Represent a token in the board using a string of 4 characters

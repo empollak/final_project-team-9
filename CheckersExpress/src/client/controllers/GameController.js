@@ -3,12 +3,12 @@ import {Token, Board} from "../models/GameModel.js"
 //game logic
 
 // endOfBoard() function, check if a token will turn into a monarch (call this function in makeMove())
-endOfBoard = function(token, newPosition) {
+const endOfBoard = function(token, newPosition) {
     return false;
 }
 
 // makeMove() function
-makeMove = function(board, token, newPosition) {
+const makeMove = function(board, token, newPosition) {
     if(!availableMoves(board, token).includes(newPosition)){
         throw new Error("This is not a legal move")
     }
@@ -21,18 +21,18 @@ makeMove = function(board, token, newPosition) {
 
 
 // availableMoves() function (for a single piece)
-availableMoves = function(board, token) {
+const availableMoves = function(board, token) {
     position = indexToPosition(token.index);
 
     return null
 }
 
 // allPlayerMoves() function (every move a player can make)
-allPlayerMoves = function(board) {
+const allPlayerMoves = function(board) {
     return null;
 }
 
-indexToPosition = function(index) {
+export const indexToPosition = function(index) {
     // Plus 1 bc 1-based indexing
     yVal = Math.floor(index/4)+1;
     // Every other line has an offset of 1
@@ -42,7 +42,7 @@ indexToPosition = function(index) {
     return xVal, yVal;
 }
 
-positionToIndex = function(x, y) {
+export const positionToIndex = function(x, y) {
     xOffset = yVal % 2;
     index = yVal * 4 + (xVal - xOffset)/2;
     
