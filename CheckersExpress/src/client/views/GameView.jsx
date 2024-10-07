@@ -19,18 +19,23 @@ export default function GameBoard(board) {
     // }
 
     const clickSquare = function(row, col){
-
+        console.log("Square Clicked:", row, col)
     }
-    const squareColor = function(row, col){
+
+    const squareColor = function(row, col) {
         const colOffset = row % 2;
         if((col + colOffset) % 2 == 0) {
             // console.log("Setting color to brown for square:", row, col);
-            return "brown";
+            return "#D2B48C";
         }
         else {
             // console.log("Setting color to white for square:", row, col);
-            return "white";
+            return "#F1F1F1";
         }
+    }
+
+    const hasToken = function(row, col) {
+        
     }
 
     // draw tokens
@@ -41,15 +46,16 @@ export default function GameBoard(board) {
                     {
                         [... Array(8)].map((gridCell, colIndex) => {
                             return <button className="square" 
-                                key={"row:"+rowIndex+",col:"+colIndex}
-                                onClick = {() => clickSquare(rowIndex, colIndex)} 
-                                style={{ 
-                                    backgroundColor: squareColor(rowIndex, colIndex),
-                                }} />
+                                    key={"row:"+rowIndex+",col:"+colIndex}
+                                    onClick = {() => clickSquare(rowIndex, colIndex)} 
+                                    style={{ 
+                                        backgroundColor: squareColor(rowIndex, colIndex),
+                                    }}> 
+                                        <img src={board.tokenAt(rowIndex,colIndex)?.imgSource} />
+                                    </button>
                         })
                     }
                 </div>
-                
             })
         }
     </>
