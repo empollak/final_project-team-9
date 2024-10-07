@@ -22,6 +22,7 @@ makeMove = function(board, token, newPosition) {
 
 // availableMoves() function (for a single piece)
 availableMoves = function(board, token) {
+    position = indexToPosition(token.index);
 
     return null
 }
@@ -32,19 +33,16 @@ allPlayerMoves = function(board) {
 }
 
 indexToPosition = function(index) {
-    yVal = Math.floor(index/4);
+    // Plus 1 bc 1-based indexing
+    yVal = Math.floor(index/4)+1;
     // Every other line has an offset of 1
     xOffset = yVal % 2;
-    xVal = (index % 4)*2 + xOffset;
-    let conversion = "a".charCodeAt(0);  
-    str = String.fromCharCode(conversion + yVal) + xVal; 
+    xVal = (index % 4)*2 + xOffset + 1;
 
-    return str;
+    return xVal, yVal;
 }
 
-positionToIndex = function(position) {
-    xVal = position.charAt(1);
-    yVal = position.charCodeAt(0) - "a".charCodeAt(0)
+positionToIndex = function(x, y) {
     xOffset = yVal % 2;
     index = yVal * 4 + (xVal - xOffset)/2;
     
