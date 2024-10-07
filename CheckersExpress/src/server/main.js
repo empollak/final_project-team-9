@@ -48,6 +48,13 @@ app.post("/register", async (req, res) => {
       const authnDB = client.db("checkers").collection("users");
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+      const existingUser = await authnDB.findOne({ username: username });
+
+      if (existingUser) {
+        res.status(400).send("Username is already taken");
+        return;
+      }
+
       const result = await authnDB.insertOne({
         username: username,
         password: hashedPassword,
@@ -77,7 +84,7 @@ app.post("/login", async (req, res) => {
           res.status(201).send(); // correct credentials
         } else {
           console.log("Incorrect credentials");
-          res.status(401).send(); // incorrect credentials
+          res.status(401).send("Incorrect credentials"); // incorrect credentials
         }
       } else {
         console.log("Incorrect credentials"); // we shan't be overly informative with error messages for security reasons

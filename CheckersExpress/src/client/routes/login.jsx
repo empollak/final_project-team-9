@@ -2,6 +2,7 @@ import {
     Form,
     redirect
 } from "react-router-dom";
+import './login.css'
 
 export async function login({ request }) {
     let formData = await request.formData();
@@ -18,11 +19,13 @@ export async function login({ request }) {
         return redirect("/browser");
     } else {
         console.log("bad");
+        return response.body;
     }
     return null;
 }
 
 export function LoginPage() {
+    const [error, setError] = useState("");
     return (<>
         <Form id="login-form" method="post">
             <input placeholder="username" name="username" />
