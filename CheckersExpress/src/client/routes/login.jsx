@@ -1,8 +1,11 @@
 import {
     Form,
-    redirect
+    redirect,
+    useActionData
 } from "react-router-dom";
 import './login.css'
+import { useState, useEffect } from "react";
+
 
 export async function login({ request }) {
     let formData = await request.formData();
@@ -18,20 +21,21 @@ export async function login({ request }) {
         console.log("good");
         return redirect("/browser");
     } else {
-        console.log("bad");
-        return response.body;
+        // console.log("bad", await response.text());
+        return await response.text();
     }
     return null;
 }
 
 export function LoginPage() {
-    const [error, setError] = useState("");
+
     return (<>
         <Form id="login-form" method="post">
             <input placeholder="username" name="username" />
             <input placeholder="password" name="password" />
             <button type="submit" name="intent" value="register">Register</button>
             <button type="submit" name="intent" value="login">Log in</button>
+            <p>{useActionData()}</p>
         </Form>
     </>)
 }

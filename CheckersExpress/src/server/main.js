@@ -88,7 +88,7 @@ app.post("/login", async (req, res) => {
         }
       } else {
         console.log("Incorrect credentials"); // we shan't be overly informative with error messages for security reasons
-        res.status(401).send(); // user not found
+        res.status(401).send("Incorrect credentials"); // user not found
       }
     } catch (error) {
       console.error("Error during authentication:", error);
