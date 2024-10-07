@@ -19,8 +19,8 @@ export class Token {
         return new Token(newIndex, this.isMonarch, this.color);
     }
 }
-redToken = new Token(0, false, "r")
-blackToken = new Token(0, false, "b")
+const redToken = new Token(0, false, "r")
+const blackToken = new Token(0, false, "b")
 
 
 export class Board {
