@@ -49,26 +49,30 @@ export default function GameBoard({ board }) {
 
     }
 
-    // draw board & tokens
-    return <div>
-        {
-            [...Array(8)].map((gridRow, rowIndex) => {
-                return <div className="" key={"row:" + rowIndex} style={{}}>
-                    {
-                        [...Array(8)].map((gridCell, colIndex) => {
-                            return <button className="square" // drawing 8x8 board squares
-                                key={"row:" + rowIndex + ",col:" + colIndex}
-                                onClick={() => clickSquare(rowIndex, colIndex)}
-                                style={{
-                                    backgroundColor: squareColor(rowIndex, colIndex),
-                                }}>
-                                <img className="square"
-                                    src={tokenAt(board, rowIndex, colIndex)?.imgSource()} />
-                            </button>
-                        })
-                    }
-                </div>
-            })
-        }
-    </div>
+    // draw tokens
+    return (
+        <div id="game">
+            {
+                [...Array(8)].map((gridRow, rowIndex) => {
+                    return <div className="row" key={"row:" + rowIndex} style={{}}>
+                        {
+                            [...Array(8)].map((gridCell, colIndex) => {
+                                return <button className="square"
+                                    key={"row:" + rowIndex + ",col:" + colIndex}
+                                    onClick={() => clickSquare(rowIndex, colIndex)}
+                                    style={{
+                                        backgroundColor: squareColor(rowIndex, colIndex),
+                                    }}>
+                                    {tokenAt(board, rowIndex, colIndex) ?
+                                        <img className="square"
+                                            src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
+                                </button>
+                            })
+                        }
+                    </div>
+                })
+            }
+        </div>
+
+    )
 }
