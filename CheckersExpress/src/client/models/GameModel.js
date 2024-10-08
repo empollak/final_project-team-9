@@ -42,15 +42,17 @@ export class Board {
     boardState;
     selected;
     currentPlayer;
+    turnCount;
 
     constructor() {
         this.boardState = [];
         this.selected = null;
         this.currentPlayer = "b";
+        this.turnCount = 0;
         this.resetBoard();
     };
 
-    resetBoard = function () {
+    resetBoard() {
         this.boardState = [];
         for (var i = 0; i < 32; i++) {
             if (i < 12) {
@@ -71,6 +73,18 @@ export class Board {
         }
     };
 
+    iterateTurn() {
+        if(this.currentPlayer == "r"){
+            // console.log("Red just finished their turn, it is now Black's turn");
+            this.currentPlayer = "b";
+        }
+        else if(this.currentPlayer == "b") {
+            // console.log("Black just finished their turn, it is now Red's turn");
+            this.currentPlayer = "r";
+        }
+        // console.log("Current Player:", this.currentPlayer);
+        this.turnCount = this.turnCount + 1;
+    }
 };
 
 

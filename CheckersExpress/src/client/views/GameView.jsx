@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/GameStyle.css"
-import { availableMoves, indexToPosition, positionToIndex, tokenAt } from "../controllers/GameController"
+import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../controllers/GameController"
 //game rendering
 
 export default function GameBoard({ board }) {
@@ -11,27 +11,28 @@ export default function GameBoard({ board }) {
     }, [selected])
 
     const clickSquare = function (row, col) {
-        console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(col, row))
+        console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col))
         if (tokenAt(board, row, col)?.color === (board.currentPlayer)) {
             setSelected({ row, col });
+            return;
         }
+
+        // If the clicked square is a legal move, make the move
+        if(isLegalMove(board, selected, [row, col])){
+            board = makeMove(board, tokenAt(board, selected.row, selected.col), [row, col]);
+            board.iterateTurn();
+            setSelected({})
+            return;
+        }
+        
     }
 
     const squareColor = function (row, col) {
         if (row === selected?.row && col === selected?.col) {
             return "#52eb34";
         }
-        const tokenAtSelected = tokenAt(board, selected?.row, selected?.col);
-        if(tokenAtSelected != null) {
-            // Find available moves
-            const moveOptions = availableMoves(board, tokenAtSelected);
-            // console.log("Examining", row, col, "Move Options:",moveOptions)
-            // Check if current row/col exists within the valid move list for the selected token
-            for (const validMove of moveOptions) {
-                if(row == validMove[0] && col == validMove[1]){
-                    return "#52eb34";
-                }
-            }
+        if(isLegalMove(board, selected, [row, col])) {
+            return "#52eb34";
         }
         const colOffset = row % 2;
         if ((col + colOffset) % 2 == 0) {

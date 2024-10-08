@@ -4,18 +4,53 @@ import {Token, Board} from "../models/GameModel.js"
 
 // endOfBoard() function, check if a token will turn into a monarch (call this function in makeMove())
 const endOfBoard = function(token, newPosition) {
-    return false;
+    if(token.color == "r" && newPosition[0]==7) {
+        return true;
+    }
+    else if(token.color == "b" && newPosition[0]==0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 // makeMove() function
 export const makeMove = function(board, token, newPosition) {
-    if(!availableMoves(board, token).includes(newPosition)){
-        throw new Error("This is not a legal move")
+    let legalMove = false;
+    const moveOptions = availableMoves(board, token);
+    // Check if current row/col exists within the valid move list for the selected token
+    for (const validMove of moveOptions) {
+        if(newPosition[0] == validMove[0] && newPosition[1] == validMove[1]){
+            legalMove = true;
+        }
     }
 
+    if(!legalMove){
+        console.log("Attempted to make move but it was not legal!");
+        return board;
+    }
+
+    const tokenPosition = indexToPosition(token.index);
+    console.log("Moving token from ", tokenPosition, "to", newPosition);
+    const dy = (newPosition[0] - tokenPosition[0]);
+    const dx = (newPosition[1] - tokenPosition[1]);
+
+    if(Math.abs(dy)==2 && Math.abs(dx)==2){
+        // If the piece wants to move by 2, it means a piece will be captured.
+        console.log("Piece captured at", tokenPosition[0]+dy/2, tokenPosition[1]+dx/2,)
+        board.boardState[positionToIndex(tokenPosition[0]+dy/2, tokenPosition[1]+dx/2)] = null;
+    }
+    
     if(endOfBoard(token, newPosition)){
         token.isMonarch = true;
     }
+
+    const newIndex = positionToIndex(newPosition[0], newPosition[1]);
+    board.boardState[token.index] = null;
+    token.index = newIndex;
+    board.boardState[newIndex] = token;
+
     return board;
 }
 
@@ -24,9 +59,9 @@ export const makeMove = function(board, token, newPosition) {
 export const availableMoves = function(board, token) {
     const moves = []
     const position = indexToPosition(token.index);
-    console.log("Index:", token.index, "Position:", position)
-    const x = position[0];
-    const y = position[1];
+    // console.log("Index:", token.index, "Position:", position)
+    const x = position[1];
+    const y = position[0];
 
     const xOptions = [-1, 1]
     const yOptions = []
@@ -39,26 +74,42 @@ export const availableMoves = function(board, token) {
     }else {
         yOptions.push(1);
     }
-    console.log("Available moves from", y, x, ":", String(xOptions), String(yOptions))
+    // console.log("Available moves from", y, x, ":", String(xOptions), String(yOptions))
     // Loop through x and y movement options
     xOptions.forEach((dx)=>{
         yOptions.forEach((dy)=>{
             const target = tokenAt(board,y + dy,x + dx);
-            if(inBounds(x + dx, y + dy) && tokenAt(board,y + dy,x + dx) == null){
+            if(inBounds(y + dy, x + dx) && tokenAt(board,y + dy,x + dx) == null){
                 moves.push([y + dy, x + dx]);
             }
-            else if(inBounds(x + 2*dx, y + 2*dy) && target?.color != board.currentPlayer && tokenAt(board,y + 2*dy,x + 2*dx) == null){
+            else if(inBounds(y + 2*dy, x + 2*dx) && target?.color != board.currentPlayer && tokenAt(board,y + 2*dy,x + 2*dx) == null){
                 moves.push([y + 2*dy, x + 2*dx])
             }
         })
     })
-    console.log("Move options from selected piece:", moves)
+    // console.log("Move options from selected piece:", moves)
     return moves
 }
 
-const inBounds = function(x, y){
-    const xInBounds = x > 0 && x <= 8;
-    const yInBounds = y > 0 && y <= 8;
+export const isLegalMove = function(board, selected, newPosition){
+    const tokenAtSelected = tokenAt(board, selected?.row, selected?.col);
+    if(tokenAtSelected != null) {
+        // Find available moves
+        const moveOptions = availableMoves(board, tokenAtSelected);
+        // console.log("Examining", row, col, "Move Options:",moveOptions)
+        // Check if current row/col exists within the valid move list for the selected token
+        for (const validMove of moveOptions) {
+            if(newPosition[0] == validMove[0] && newPosition[1] == validMove[1]){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+const inBounds = function(row, col){
+    const xInBounds = col >= 0 && col < 8;
+    const yInBounds = row >= 0 && row < 8;
     return xInBounds && yInBounds;
 }
 
@@ -68,23 +119,23 @@ export const allPlayerMoves = function(board) {
 }
 
 export const tokenAt = function(board, row, col) {
-    const index = positionToIndex(col, row);
+    const index = positionToIndex(row, col);
     return board.boardState[index];
 };
 
 export const indexToPosition = function(index) {
     // Plus 1 bc 1-based indexing
-    const yVal = Math.floor(index/4);
+    const row = Math.floor(index/4);
     // Every other line has an offset of 1
-    const xOffset = (yVal) % 2;
-    const xVal = (index % 4)*2 + xOffset;
+    const xOffset = (row) % 2;
+    const col = (index % 4)*2 + xOffset;
 
-    return [xVal, yVal];
+    return [row, col];
 }
 
-export const positionToIndex = function(x, y) {
+export const positionToIndex = function(row, col) {
     // Offset on even number rows (from top left)
-    const xOffset = y % 2;
-    const index = y * 4 + (x - xOffset)/2;
+    const xOffset = row % 2;
+    const index = row * 4 + (col - xOffset)/2;
     return index;
 }
