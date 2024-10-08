@@ -1,11 +1,12 @@
-import { Form, useLoaderData, useNavigate } from "react-router-dom"
+import { Form, Outlet, useLoaderData, useNavigate } from "react-router-dom"
 import { useEffect } from "react";
 import { useState } from "react";
 import LogoutButton from "../LogoutButton";
 import Game from "./game";
+import Leaderboard from "./leaderboard";
 
 export default function Browser() {
-    const socket = useLoaderData();
+    const socket = useLoaderData().io;
     // const navigate = useNavigate();
     const [gameCode, setGameCode] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
@@ -45,7 +46,6 @@ export default function Browser() {
     return (
         <>
             <LogoutButton socket={socket}></LogoutButton>
-
             {!gameJoined ? <>
                 <h1>Welcome to Checkers!</h1>
                 <h2>Enter a game code to join:</h2>
@@ -58,7 +58,12 @@ export default function Browser() {
                     />
                     <button type="submit">Submit</button>
                 </Form>
+                <br />
+                <h2>Leaderboard</h2>
+                <Leaderboard />
+
                 <br></br></> : <Game socket={socket} gameStarted={gameStarted} gameCode={gameCode} setGameJoined={setGameJoined} setGameStarted={setGameStarted} />}
+
         </>
     )
 }

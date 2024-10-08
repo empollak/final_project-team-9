@@ -12,6 +12,7 @@ import {
 import { LoginPage, login } from "./routes/login"
 import ErrorPage from "./error-page";
 import Browser from "./routes/browser";
+import Leaderboard from "./routes/leaderboard";
 
 
 const router = createBrowserRouter([
@@ -29,12 +30,12 @@ const router = createBrowserRouter([
       const response = await fetch("/data", {
         method: "GET",
       });
-      if (response.status === 401) {
+      if (response.status !== 200) {
         console.log("Not authenticated");
         return redirect("/");
       } else {
         console.log("auth'd, code ", response.status);
-        return io();
+        return { io: io(), data: await response.json() };
       }
       // await fetch server data
       // if not logged in, return redirect to login

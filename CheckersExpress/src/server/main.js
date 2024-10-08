@@ -115,9 +115,20 @@ app.post("/logout", requireAuth, (req, res) => {
   res.status(401).send("Logged out");
 });
 
-app.get("/data", requireAuth, (req, res) => {
+// Simply responds with 200 if the client is authenticated
+app.get("/checkAuth", requireAuth, (req, res) => {
   res.status(200).send();
 })
+
+const statsDB = client.db("checkers").collection("stats");
+app.get("/data", requireAuth, async (req, res) => {
+  res.status(200).json((await statsDB.find().toArray()).sort((a, b) => {
+    a.winrate = a.wins / (a.wins + a.losses);
+    b.winrate = b.wins / (b.wins + b.losses);
+    return b.winrate - a.winrate;
+  }));
+})
+
 
 const games = {}; // hold all our games
 
