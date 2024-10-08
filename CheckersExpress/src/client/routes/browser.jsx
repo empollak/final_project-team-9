@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import { useState } from "react";
 import LogoutButton from "../LogoutButton";
 import Game from "./game";
+import GameBoard from "../views/GameView";
 import Leaderboard from "./leaderboard";
+import { Board } from "../models/GameModel";
 
 export default function Browser() {
     const socket = useLoaderData().io;
@@ -11,6 +13,8 @@ export default function Browser() {
     const [gameCode, setGameCode] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameJoined, setGameJoined] = useState(false);
+    const board = new Board();
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -59,7 +63,7 @@ export default function Browser() {
                 <h2>Leaderboard</h2>
                 <Leaderboard />
 
-                <br></br></> : <Game socket={socket} gameStarted={gameStarted} gameCode={gameCode} setGameJoined={setGameJoined} setGameStarted={setGameStarted} />}
+                <br></br></> : <GameBoard board={board} />}
 
         </>
     )
