@@ -49,14 +49,14 @@ export default function GameBoard({ board }) {
 
     }
 
-    // draw tokens
+    // draw board & tokens
     return <div>
         {
             [...Array(8)].map((gridRow, rowIndex) => {
                 return <div className="" key={"row:" + rowIndex} style={{}}>
                     {
                         [...Array(8)].map((gridCell, colIndex) => {
-                            return <button className="square"
+                            return <button className="square" // drawing 8x8 board squares
                                 key={"row:" + rowIndex + ",col:" + colIndex}
                                 onClick={() => clickSquare(rowIndex, colIndex)}
                                 style={{
