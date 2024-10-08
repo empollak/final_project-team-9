@@ -56,7 +56,7 @@ export class Board {
             if (i < 12) {
                 this.boardState.push(redToken.softCopy(i));
             }
-            else if (i >= 21) {
+            else if (i >= 20) {
                 this.boardState.push(blackToken.softCopy(i));
             }
             // else if (i == 16){
