@@ -10,6 +10,11 @@ export default function GameBoard({ board }) {
         board.selected = selected;
     }, [selected])
 
+    useEffect(()=>{
+        const winner = board.winner == "r" ? "Red" : "Black";
+        alert("Game Over, " + winner + " Wins!")
+    }, [board.winner])
+
     const clickSquare = function (row, col) {
         console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col))
         if (tokenAt(board, row, col)?.color === (board.currentPlayer)) {
@@ -20,7 +25,6 @@ export default function GameBoard({ board }) {
         // If the clicked square is a legal move, make the move
         if(isLegalMove(board, selected, [row, col])){
             board = makeMove(board, tokenAt(board, selected.row, selected.col), [row, col]);
-            board.iterateTurn();
             setSelected({})
             return;
         }

@@ -11,6 +11,7 @@ import {
 import { LoginPage, login } from "./routes/login"
 import ErrorPage from "./error-page";
 import Browser from "./routes/browser";
+import App from "./App"; 
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,6 @@ import "./App.css"
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>,
 );

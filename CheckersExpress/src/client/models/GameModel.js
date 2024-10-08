@@ -1,5 +1,7 @@
 //persistant memory
 
+import { allPlayerMoves } from "../controllers/GameController";
+
 // Tokens store their own position, title, and color
 export class Token {
     index;
@@ -43,12 +45,14 @@ export class Board {
     selected;
     currentPlayer;
     turnCount;
+    winner;
 
     constructor() {
         this.boardState = [];
         this.selected = null;
         this.currentPlayer = "b";
         this.turnCount = 0;
+        this.winner = null;
         this.resetBoard();
     };
 
@@ -74,15 +78,18 @@ export class Board {
     };
 
     iterateTurn() {
-        if(this.currentPlayer == "r"){
-            // console.log("Red just finished their turn, it is now Black's turn");
-            this.currentPlayer = "b";
-        }
-        else if(this.currentPlayer == "b") {
-            // console.log("Black just finished their turn, it is now Red's turn");
-            this.currentPlayer = "r";
+        // Swap turn
+        const nextPlayer = this.currentPlayer == "r" ? "b" : "r";
+        this.currentPlayer = nextPlayer;
+
+        // Check win condition
+        const playerMoves = allPlayerMoves(this);
+        if(playerMoves.length == 0){
+            console.log("Game over, winner is", this.currentPlayer == "r" ? "b" : "r");
+            this.winner = this.currentPlayer == "r" ? "b" : "r";
         }
         // console.log("Current Player:", this.currentPlayer);
+
         this.turnCount = this.turnCount + 1;
     }
 };

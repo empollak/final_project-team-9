@@ -36,6 +36,7 @@ export const makeMove = function(board, token, newPosition) {
     const dy = (newPosition[0] - tokenPosition[0]);
     const dx = (newPosition[1] - tokenPosition[1]);
 
+    // Piece capture logic
     if(Math.abs(dy)==2 && Math.abs(dx)==2){
         // If the piece wants to move by 2, it means a piece will be captured.
         console.log("Piece captured at", tokenPosition[0]+dy/2, tokenPosition[1]+dx/2,)
@@ -51,6 +52,7 @@ export const makeMove = function(board, token, newPosition) {
     token.index = newIndex;
     board.boardState[newIndex] = token;
 
+    board.iterateTurn();
     return board;
 }
 
@@ -115,7 +117,21 @@ const inBounds = function(row, col){
 
 // allPlayerMoves() function (every move a player can make)
 export const allPlayerMoves = function(board) {
-    return null;
+    let allMoves = [];
+    for(const tokenIndex in board.boardState){
+        const token = board.boardState[tokenIndex]
+        if(token == null){
+            continue;
+        }
+        if(token?.color == board.currentPlayer){
+            const singleTokenMoves = availableMoves(board, token);
+            if(singleTokenMoves != undefined && singleTokenMoves.length > 0){
+                allMoves.push([token, availableMoves(board, token)]);
+            }
+        }
+    }
+    console.log("Player", board.currentPlayer, "moves:", allMoves);
+    return allMoves;
 }
 
 export const tokenAt = function(board, row, col) {
