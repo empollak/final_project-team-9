@@ -1,0 +1,24 @@
+#game {
+    border: 2px solid black;
+}
+
+.row {
+    display: flex;
+    height: 64px;
+
+}
+
+.square {
+    border-radius: 0;
+    padding: 0;
+    height: 64px;
+    width: 64px;
+}
+
+
+
+img.square {
+    position: relative;
+    left: -1px;
+    top: -1px;
+}
