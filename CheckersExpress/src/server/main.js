@@ -8,9 +8,9 @@ import { Server } from "socket.io";
 import { createServer } from 'http';
 import bcrypt from 'bcrypt';
 
-const app = express();
-const server = createServer(app);
-const io = new Server(server);
+export const app = express();
+export const server = createServer(app);
+export const io = new Server(server);
 const saltRounds = 10;
 
 app.use(compression());
@@ -100,7 +100,7 @@ app.post("/login", async (req, res) => {
 });
 
 // middleware that always sends unauthenicated users to the login page
-const requireAuth = (req, res, next) => {
+export const requireAuth = (req, res, next) => {
   if (req.session.login) {
     next();
   } else {

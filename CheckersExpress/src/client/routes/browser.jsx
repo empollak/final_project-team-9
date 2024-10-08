@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { useState } from "react";
 import LogoutButton from "../LogoutButton";
 import Game from "./game";
-import GameBoard from "../views/GameView";
+import GameBoard from "./GameView";
 import Leaderboard from "./leaderboard";
-import { Board } from "../models/GameModel";
+import { Board } from "../../shared/GameModel";
 
 export default function Browser() {
     const socket = useLoaderData().io;

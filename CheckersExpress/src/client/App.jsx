@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import GameBoard from "./views/GameView";
-import { Board, Token } from "./models/GameModel"
+import GameBoard from "./routes/GameView";
+import { Board, Token } from "../shared/GameModel"
 
 function App() {
   const [count, setCount] = useState(0);

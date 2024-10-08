@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/GameStyle.css"
-import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../controllers/GameController"
+import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../../shared/GameController"
 //game rendering
 
 export default function GameBoard({ board }) {

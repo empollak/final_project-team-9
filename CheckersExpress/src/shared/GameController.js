@@ -1,4 +1,4 @@
-import {Token, Board} from "../models/GameModel.js"
+import {Token, Board} from "../client/models/GameModel.js"
 
 //game logic
 
