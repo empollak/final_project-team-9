@@ -185,11 +185,6 @@ io.on('connection', (socket) => {
   })
 });
 
-io.on("disconnect", (socket) => {
-  console.log('User disconnected from socket', socket.id);
-  // handle disconnection
-});
-
 server.listen(3000, () =>
   console.log("Server is listening on port 3000..."),
 );

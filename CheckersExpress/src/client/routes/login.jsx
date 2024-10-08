@@ -9,9 +9,14 @@ import { useState, useEffect } from "react";
 
 export async function login({ request }) {
     let formData = await request.formData();
+
+    // Intent is based on the button value
+    // Differentiates between login and register
     let intent = formData.get("intent");
     console.log("Sending ", formData.get("username"), "pw", formData.get("password"));
     let resource = (intent === "login") ? "/login" : "/register";
+
+    // Either login or register depending on request. Both are handled the same way. 
     const response = await fetch(resource, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -21,10 +26,9 @@ export async function login({ request }) {
         console.log("good");
         return redirect("/browser");
     } else {
-        // console.log("bad", await response.text());
+        // Login failed for some reason. Return the text error message to be displayed.
         return await response.text();
     }
-    return null;
 }
 
 export function LoginPage() {

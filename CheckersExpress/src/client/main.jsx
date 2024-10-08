@@ -6,13 +6,11 @@ import {
   createBrowserRouter,
   RouterProvider,
   redirect,
-  useLoaderData
 } from "react-router-dom";
 
 import { LoginPage, login } from "./routes/login"
 import ErrorPage from "./error-page";
 import Browser from "./routes/browser";
-import Leaderboard from "./routes/leaderboard";
 
 
 const router = createBrowserRouter([
@@ -35,20 +33,14 @@ const router = createBrowserRouter([
         return redirect("/");
       } else {
         console.log("auth'd, code ", response.status);
+        // Set up socket and also give the leaderboard data
         return { io: io(), data: await response.json() };
       }
-      // await fetch server data
-      // if not logged in, return redirect to login
     },
   },
-  // {
-  //   path: "/game",
-  //   element: <Game socket={socket} />,
-  // }
 ]);
 
-import App from "./App";
-import Game from "./routes/game";
+import "./App.css"
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

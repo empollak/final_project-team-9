@@ -20,12 +20,9 @@ export default function Browser() {
 
     useEffect(() => {
         socket.on("gameJoined", (gameCode) => {
-            // alert(`Successfully joined game: ${gameCode}`);
-
-            // Give the game the socket and game code
+            // Joined the game!
             setGameJoined(true);
             setGameCode(gameCode);
-            // navigate("/game", { state: { gameCode: gameCode } });
         });
 
         socket.on("gameStarted", () => {
