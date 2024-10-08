@@ -1,23 +1,10 @@
 import { useState, useEffect } from "react";
 import "../styles/GameStyle.css"
-import { indexToPosition, positionToIndex, tokenAt } from "../controllers/GameController"
+import { availableMoves, indexToPosition, positionToIndex, tokenAt } from "../controllers/GameController"
 //game rendering
 
 export default function GameBoard({ board }) {
-    // const ctx = canvasObj.getContext('2d')
 
-    // // clear the canvas area before rendering elements again
-    // ctx.clearRect(0, 0, canvasObj.width, canvasObj.height) // assume square region
-
-    // // draw game board
-    // for (let i = 0; i < 8; i++) {
-    //     for (let j = 0; j < 8; j++) {
-    //         ctx.fillStyle = 'white'
-    //         ctx.fillRect(sq.column * 60, sq.row * 60, 60, 60) // filling the squares
-    //         ctx.fillStyle = 'black'
-    //         ctx.strokeRect(sq.column * 60, sq.row * 60, 60, 60) // adding borders to the squares
-    //     }
-    // }
     const [selected, setSelected] = useState({});
     useEffect(() => {
         board.selected = selected;
@@ -34,6 +21,18 @@ export default function GameBoard({ board }) {
         if (row === selected?.row && col === selected?.col) {
             return "#52eb34";
         }
+        const tokenAtSelected = tokenAt(board, selected?.row, selected?.col);
+        if(tokenAtSelected != null) {
+            const moveOptions = availableMoves(board, tokenAtSelected);
+            // So availableMoves is working as intended
+            // But this if statement isn't triggering
+            // This seems to be bc this function (squareColor) doesn't get re-called
+            // Except for the newly selected piece.
+            if(moveOptions.includes([row, col])){
+                // console.log("Current Square", row, col, "is a valid move given a selected piece at ", selected?.row, selected?.col)
+                return "#52eb34";
+            }
+        }
         const colOffset = row % 2;
         if ((col + colOffset) % 2 == 0) {
             // console.log("Setting color to brown for square:", row, col);
@@ -43,10 +42,6 @@ export default function GameBoard({ board }) {
             // console.log("Setting color to white for square:", row, col);
             return "#F1F1F1";
         }
-    }
-
-    const hasToken = function (row, col) {
-
     }
 
     // draw tokens
@@ -59,13 +54,13 @@ export default function GameBoard({ board }) {
                             [...Array(8)].map((gridCell, colIndex) => {
                                 return <button className="square"
                                     key={"row:" + rowIndex + ",col:" + colIndex}
-                                    onClick={() => clickSquare(rowIndex, colIndex)}
+                                    onClick={() => clickSquare(rowIndex+1, colIndex+1)}
                                     style={{
-                                        backgroundColor: squareColor(rowIndex, colIndex),
+                                        backgroundColor: squareColor(rowIndex+1, colIndex+1),
                                     }}>
-                                    {tokenAt(board, rowIndex, colIndex) ?
+                                    {tokenAt(board, rowIndex+1, colIndex+1) ?
                                         <img className="square"
-                                            src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
+                                            src={tokenAt(board, rowIndex+1, colIndex+1).imgSource()} /> : null}
                                 </button>
                             })
                         }

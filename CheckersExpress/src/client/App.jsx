@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import "./App.css";
-import RedrawBoard from "./views/GameView";
+import GameBoard from "./views/GameView";
 import { Board, Token } from "./models/GameModel"
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
   
   return (
     <div className="App">
-      <RedrawBoard board={board}/>
+      <GameBoard board={board}/>
     </div>
   );
 }
