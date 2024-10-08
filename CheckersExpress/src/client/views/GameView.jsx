@@ -28,16 +28,16 @@ export default function GameBoard({ board }) {
     }
 
     const squareColor = function (row, col) {
-        if (row === selected?.row && col === selected?.col) {
-            return "#52eb34";
-        }
+        // if (row === selected?.row && col === selected?.col) {
+        //     return "#460075";
+        // }
         if(isLegalMove(board, selected, [row, col])) {
-            return "#52eb34";
+            return "#008844";
         }
         const colOffset = row % 2;
         if ((col + colOffset) % 2 == 0) {
-            // console.log("Setting color to brown for square:", row, col);
-            return "#D2B48C";
+            // console.log("Setting color to purple for square:", row, col);
+            return "#9066b0";
         }
         else {
             // console.log("Setting color to white for square:", row, col);
