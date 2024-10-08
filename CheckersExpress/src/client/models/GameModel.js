@@ -2,35 +2,35 @@
 
 // Tokens store their own position, title, and color
 export class Token {
-    index; 
-    isMonarch; 
+    index;
+    isMonarch;
     color;
-    
+
     constructor(index, isMonarch, color) {
         this.index = index;
         this.isMonarch = isMonarch;
         this.color = color;
     }
-    
-    copy = function() {
+
+    copy = function () {
         return new Token(this.index, this.isMonarch, this.color);
     }
-    softCopy = function(newIndex) {
+    softCopy = function (newIndex) {
         return new Token(newIndex, this.isMonarch, this.color);
     }
-    imgSource = function() {
-        if (this.color == "b"){
-            if (this.isMonarch){
+    imgSource = function () {
+        if (this.color == "b") {
+            if (this.isMonarch) {
                 return "dark_monarch.png";
             } else {
                 return "dark_piece.png";
             }
         } else {
-            if (this.isMonarch){
+            if (this.isMonarch) {
                 return "light_monarch.png";
             } else {
                 return "light_piece.png";
-            } 
+            }
         }
     }
 }
@@ -42,21 +42,21 @@ export class Board {
     boardState;
     selected;
     currentPlayer;
-    
+
     constructor() {
         this.boardState = [];
         this.selected = null;
-        this.currentPlayer = 1;
+        this.currentPlayer = "r";
         this.resetBoard();
     };
 
-    resetBoard = function() {
+    resetBoard = function () {
         this.boardState = [];
-        for(var i = 0; i < 32; i++) {
-            if(i < 12) {
-                this.boardState.push(redToken.softCopy(i));    
+        for (var i = 0; i < 32; i++) {
+            if (i < 12) {
+                this.boardState.push(redToken.softCopy(i));
             }
-            else if(i >= 20) {
+            else if (i >= 20) {
                 this.boardState.push(blackToken.softCopy(i));
             }
             else {

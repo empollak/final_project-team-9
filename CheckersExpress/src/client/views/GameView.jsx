@@ -1,11 +1,11 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import "../styles/GameStyle.css"
-import {indexToPosition, positionToIndex, tokenAt} from "../controllers/GameController"
+import { indexToPosition, positionToIndex, tokenAt } from "../controllers/GameController"
 //game rendering
 
-export default function GameBoard({board}) {
+export default function GameBoard({ board }) {
     // const ctx = canvasObj.getContext('2d')
-    
+
     // // clear the canvas area before rendering elements again
     // ctx.clearRect(0, 0, canvasObj.width, canvasObj.height) // assume square region
 
@@ -18,14 +18,24 @@ export default function GameBoard({board}) {
     //         ctx.strokeRect(sq.column * 60, sq.row * 60, 60, 60) // adding borders to the squares
     //     }
     // }
+    const [selected, setSelected] = useState({});
+    useEffect(() => {
+        board.selected = selected;
+    }, [selected])
 
-    const clickSquare = function(row, col){
+    const clickSquare = function (row, col) {
         console.log("Square Clicked:", row, col)
+        if (tokenAt(board, row, col)?.color === (board.currentPlayer)) {
+            setSelected({ row, col });
+        }
     }
 
-    const squareColor = function(row, col) {
+    const squareColor = function (row, col) {
+        if (row === selected?.row && col === selected?.col) {
+            return "#52eb34";
+        }
         const colOffset = row % 2;
-        if((col + colOffset) % 2 == 0) {
+        if ((col + colOffset) % 2 == 0) {
             // console.log("Setting color to brown for square:", row, col);
             return "#D2B48C";
         }
@@ -35,26 +45,26 @@ export default function GameBoard({board}) {
         }
     }
 
-    const hasToken = function(row, col) {
-        
+    const hasToken = function (row, col) {
+
     }
 
     // draw tokens
     return <div>
         {
-            [... Array(8)].map((gridRow, rowIndex) => {
-                return <div className="" key={"row:"+rowIndex} style={{}}>
+            [...Array(8)].map((gridRow, rowIndex) => {
+                return <div className="" key={"row:" + rowIndex} style={{}}>
                     {
-                        [... Array(8)].map((gridCell, colIndex) => {
-                            return <button className="square" 
-                                    key={"row:"+rowIndex+",col:"+colIndex}
-                                    onClick = {() => clickSquare(rowIndex, colIndex)} 
-                                    style={{ 
-                                        backgroundColor: squareColor(rowIndex, colIndex),
-                                    }}> 
-                                        <img className="square" 
-                                             src={tokenAt(board,rowIndex,colIndex)?.imgSource()}/>
-                                    </button>
+                        [...Array(8)].map((gridCell, colIndex) => {
+                            return <button className="square"
+                                key={"row:" + rowIndex + ",col:" + colIndex}
+                                onClick={() => clickSquare(rowIndex, colIndex)}
+                                style={{
+                                    backgroundColor: squareColor(rowIndex, colIndex),
+                                }}>
+                                <img className="square"
+                                    src={tokenAt(board, rowIndex, colIndex)?.imgSource()} />
+                            </button>
                         })
                     }
                 </div>
