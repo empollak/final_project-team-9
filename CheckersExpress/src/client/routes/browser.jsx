@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import LogoutButton from "../LogoutButton";
 import Game from "./game";
-import GameBoard from "./GameView";
+import GameBoard from "./gameboard";
 import Leaderboard from "./leaderboard";
 import { Board } from "../../shared/GameModel";
 

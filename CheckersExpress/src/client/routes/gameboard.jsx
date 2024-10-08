@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../styles/GameStyle.css"
+import "./gamestyle.css"
 import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../../shared/GameController"
 //game rendering
 
