@@ -59,12 +59,12 @@ export class Board {
             else if (i >= 21) {
                 this.boardState.push(blackToken.softCopy(i));
             }
-            else if (i == 16){
-                this.boardState.push(new Token(16, true, "b"))
-            }
-            else if (i == 17){
-                this.boardState.push(new Token(17, true, "b"))
-            }
+            // else if (i == 16){
+            //     this.boardState.push(new Token(16, true, "b"))
+            // }
+            // else if (i == 17){
+            //     this.boardState.push(new Token(17, true, "b"))
+            // }
             else {
                 this.boardState.push(null);
             }
