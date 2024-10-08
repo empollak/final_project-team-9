@@ -11,7 +11,7 @@ export default function GameBoard({ board }) {
     }, [selected])
 
     const clickSquare = function (row, col) {
-        console.log("Square Clicked:", row, col)
+        console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(col, row))
         if (tokenAt(board, row, col)?.color === (board.currentPlayer)) {
             setSelected({ row, col });
         }
@@ -23,14 +23,14 @@ export default function GameBoard({ board }) {
         }
         const tokenAtSelected = tokenAt(board, selected?.row, selected?.col);
         if(tokenAtSelected != null) {
+            // Find available moves
             const moveOptions = availableMoves(board, tokenAtSelected);
-            // So availableMoves is working as intended
-            // But this if statement isn't triggering
-            // This seems to be bc this function (squareColor) doesn't get re-called
-            // Except for the newly selected piece.
-            if(moveOptions.includes([row, col])){
-                // console.log("Current Square", row, col, "is a valid move given a selected piece at ", selected?.row, selected?.col)
-                return "#52eb34";
+            // console.log("Examining", row, col, "Move Options:",moveOptions)
+            // Check if current row/col exists within the valid move list for the selected token
+            for (const validMove of moveOptions) {
+                if(row == validMove[0] && col == validMove[1]){
+                    return "#52eb34";
+                }
             }
         }
         const colOffset = row % 2;
@@ -54,13 +54,13 @@ export default function GameBoard({ board }) {
                             [...Array(8)].map((gridCell, colIndex) => {
                                 return <button className="square"
                                     key={"row:" + rowIndex + ",col:" + colIndex}
-                                    onClick={() => clickSquare(rowIndex+1, colIndex+1)}
+                                    onClick={() => clickSquare(rowIndex, colIndex)}
                                     style={{
-                                        backgroundColor: squareColor(rowIndex+1, colIndex+1),
+                                        backgroundColor: squareColor(rowIndex, colIndex),
                                     }}>
-                                    {tokenAt(board, rowIndex+1, colIndex+1) ?
+                                    {tokenAt(board, rowIndex, colIndex) ?
                                         <img className="square"
-                                            src={tokenAt(board, rowIndex+1, colIndex+1).imgSource()} /> : null}
+                                            src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
                                 </button>
                             })
                         }
