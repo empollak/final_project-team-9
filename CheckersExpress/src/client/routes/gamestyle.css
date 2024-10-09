@@ -2,6 +2,10 @@
     border: 2px solid black;
 }
 
+.rotate {
+    transform: rotate(180deg);
+}
+
 .row {
     display: flex;
     height: 64px;

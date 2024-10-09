@@ -79,9 +79,13 @@ export default function GameBoard({ board, socket, player, setBoard }) {
         }
     }
 
+    let rotateClass = (player !== "b") ? "rotate" : null;
+    // let oppositeRotate = (player === "b") ? "rotate" : null;
+    console.log("rotate class", rotateClass);
+
     // draw tokens
     return (
-        <div id="game">
+        <div id="game" className={rotateClass}>
             {
                 [...Array(8)].map((gridRow, rowIndex) => {
                     return <div className="row" key={"row:" + rowIndex} style={{}}>
@@ -94,7 +98,7 @@ export default function GameBoard({ board, socket, player, setBoard }) {
                                         backgroundColor: squareColor(rowIndex, colIndex),
                                     }}>
                                     {tokenAt(board, rowIndex, colIndex) ?
-                                        <img className="square"
+                                        <img className={"square" + " " + rotateClass}
                                             src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
                                 </button>
                             })
