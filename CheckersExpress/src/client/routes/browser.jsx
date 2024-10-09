@@ -13,7 +13,9 @@ export default function Browser() {
     const [gameCode, setGameCode] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameJoined, setGameJoined] = useState(false);
-    const board = new Board();
+    const [board, setBoard] = useState(new Board());
+    const [player, setPlayer] = useState("");
+    // const board = new Board();
 
 
     const handleSubmit = (e) => {
@@ -29,8 +31,9 @@ export default function Browser() {
             setGameCode(gameCode);
         });
 
-        socket.on("gameStarted", () => {
-            console.log("Game started!");
+        socket.on("gameStarted", (player) => {
+            console.log("Game started! I am player ", player);
+            setPlayer(player);
             setGameStarted(true);
         })
 
@@ -63,7 +66,7 @@ export default function Browser() {
                 <h2>Leaderboard</h2>
                 <Leaderboard />
 
-                <br></br></> : <GameBoard board={board} />}
+                <br></br></> : gameStarted ? <GameBoard board={board} socket={socket} setBoard={setBoard} player={player} /> : <h1>Waiting for opponent. Game Code: {gameCode}</h1>}
 
         </>
     )

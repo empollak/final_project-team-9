@@ -1,6 +1,6 @@
 //persistant memory
 
-import { allPlayerMoves } from "../controllers/GameController";
+import { allPlayerMoves } from "./GameController.js";
 
 // Tokens store their own position, title, and color
 export class Token {
@@ -56,6 +56,15 @@ export class Board {
         this.resetBoard();
     };
 
+    copy() {
+        let newBoard = new Board();
+        newBoard.boardState = this.boardState;
+        newBoard.currentPlayer = this.currentPlayer;
+        newBoard.turnCount = this.turnCount;
+        newBoard.winner = this.winner;
+        return newBoard;
+    }
+
     resetBoard() {
         this.boardState = [];
         for (var i = 0; i < 32; i++) {
@@ -84,7 +93,7 @@ export class Board {
 
         // Check win condition
         const playerMoves = allPlayerMoves(this);
-        if(playerMoves.length == 0){
+        if (playerMoves.length == 0) {
             console.log("Game over, winner is", this.currentPlayer == "r" ? "b" : "r");
             this.winner = this.currentPlayer == "r" ? "b" : "r";
         }

@@ -7,10 +7,12 @@ import compression from "compression";
 import { Server } from "socket.io";
 import { createServer } from 'http';
 import bcrypt from 'bcrypt';
+import ioHandler from './gameServer.js';
 
 export const app = express();
 export const server = createServer(app);
 export const io = new Server(server);
+ioHandler(io);
 const saltRounds = 10;
 
 app.use(compression());

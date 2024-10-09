@@ -1,41 +1,56 @@
 import { useState, useEffect } from "react";
 import "./gamestyle.css"
 import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../../shared/GameController"
+import { Token } from "../../shared/GameModel";
 //game rendering
 
-export default function GameBoard({ board }) {
-
+export default function GameBoard({ board, socket, player, setBoard }) {
     const [selected, setSelected] = useState({});
+
     useEffect(() => {
         board.selected = selected;
     }, [selected])
 
-    useEffect(()=>{
-        const winner = board.winner == "r" ? "Red" : "Black";
-        alert("Game Over, " + winner + " Wins!")
+    useEffect(() => {
+        const winner = board.winner === "r" ? "Red" : "Black";
+        // alert("Game Over, " + winner + " Wins!")
     }, [board.winner])
 
+    socket.on("board", (boardState, currentPlayer) => {
+        board.boardState = boardState.map((token) => {
+            if (token) {
+                return new Token(token.index, token.isMonarch, token.color);
+            }
+            return null;
+        })
+        board.currentPlayer = currentPlayer;
+        console.log("Updated board state", boardState);
+        console.log("board copy", board.copy());
+        setBoard(board.copy());
+    })
+
     const clickSquare = function (row, col) {
-        console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col))
-        if (tokenAt(board, row, col)?.color === (board.currentPlayer)) {
+        console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col), " current player ", board.currentPlayer, " i am player ", player);
+        if (tokenAt(board, row, col)?.color === (board.currentPlayer) && board.currentPlayer == player) {
             setSelected({ row, col });
             return;
         }
 
         // If the clicked square is a legal move, make the move
-        if(isLegalMove(board, selected, [row, col])){
+        if (isLegalMove(board, selected, [row, col])) {
             board = makeMove(board, tokenAt(board, selected.row, selected.col), [row, col]);
+            socket.emit("makemove", { oldRow: selected.row, oldCol: selected.col, newRow: row, newCol: col });
             setSelected({})
             return;
         }
-        
+
     }
 
     const squareColor = function (row, col) {
         // if (row === selected?.row && col === selected?.col) {
         //     return "#460075";
         // }
-        if(isLegalMove(board, selected, [row, col])) {
+        if (isLegalMove(board, selected, [row, col])) {
             return "#008844";
         }
         const colOffset = row % 2;
