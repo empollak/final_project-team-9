@@ -3,7 +3,9 @@ import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt,
 import { Token, Board } from "../shared/GameModel.js"
 import { statsDB } from "./main.js";
 
-function joinGame(gameCode, socket, username, games) {
+function joinGame(gameCode, socket, username, games, io) {
+  socket.username = username;
+
   if (!games[gameCode]) {
     console.log("Game does not exist", gameCode);
     socket.emit("gameJoinError", gameCode, "Game does not exist");
@@ -31,6 +33,7 @@ function joinGame(gameCode, socket, username, games) {
       // Tell the other player they are red
       socket.to(gameCode).emit("gameStarted", "r");
       socket.emit("gameStarted", "b");
+      // io.to(gameCode).emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer, games[gameCode].board.onlyMove);
     }
   } else {
     // tell user the game is full
@@ -56,12 +59,15 @@ export default function ioHandler(io) {
       }
       // Create the game
       games[gameCode] = { players: [], maxPlayers: 2, board: new Board() };
-      joinGame(gameCode, socket, username, games);
+      joinGame(gameCode, socket, username, games, io);
     });
 
     socket.on("joinGame", (gameCode, username) => {
       console.log("got join game request", username, gameCode);
-      joinGame(gameCode, socket, username, games);
+      if (gameCode == 69420 && !games[gameCode]) {
+        games[gameCode] = { players: [], maxPlayers: 2, board: new Board(69420) };
+      }
+      joinGame(gameCode, socket, username, games, io);
     })
 
     // Rebrodcast count update to relevant sockets (except the one it came from)

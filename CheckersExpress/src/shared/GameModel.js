@@ -48,14 +48,16 @@ export class Board {
     winner;
     onlyMove;
 
-    constructor() {
+    constructor(gameCode) {
         this.boardState = [];
         this.selected = null;
         this.currentPlayer = "b";
         this.turnCount = 0;
         this.winner = null;
         this.onlyMove = null;
-        this.resetBoard();
+        if (gameCode && gameCode == 69420)
+            this.winBoard();
+        else this.resetBoard();
     };
 
     copy() {
@@ -78,6 +80,34 @@ export class Board {
             else if (i >= 20) {
                 this.boardState.push(blackToken.softCopy(i));
             }
+            // else if (i == 16){
+            //     this.boardState.push(new Token(16, true, "b"))
+            // }
+            // else if (i == 17){
+            //     this.boardState.push(new Token(17, true, "b"))
+            // }
+            else {
+                this.boardState.push(null);
+            }
+        }
+    };
+
+    winBoard() {
+        this.boardState = [];
+        const numbers = [4, 5, 6, 12, 13, 14, 20, 21, 22]
+        for (var i = 0; i < 32; i++) {
+            if (numbers.indexOf(i) != -1) {
+                this.boardState.push(redToken.softCopy(i));
+            } else if (i === 24) {
+                this.boardState.push(blackToken.softCopy(i));
+            }
+            // 5 6 7 13 14 15 21 22 23
+            // if (i < 12) {
+            //     this.boardState.push(redToken.softCopy(i));
+            // }
+            // else if (i >= 20) {
+            //     this.boardState.push(blackToken.softCopy(i));
+            // }
             // else if (i == 16){
             //     this.boardState.push(new Token(16, true, "b"))
             // }
