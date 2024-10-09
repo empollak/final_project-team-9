@@ -60,9 +60,11 @@ export default function GameBoard({ board, socket, player, setBoard }) {
     }
 
     const squareColor = function (row, col) {
-        // if (row === selected?.row && col === selected?.col) {
-        //     return "#460075";
-        // }
+        // dark purple #460075
+        // green #008844
+        if (row === selected?.row && col === selected?.col) {
+            return "teal";
+        }
         if (isLegalMove(board, selected, [row, col])) {
             return "#008844";
         }
