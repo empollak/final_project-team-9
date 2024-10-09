@@ -1,7 +1,8 @@
 import {
     Form,
     redirect,
-    useActionData
+    useActionData,
+    useNavigate
 } from "react-router-dom";
 import './login.css'
 import { useState, useEffect } from "react";
@@ -32,6 +33,32 @@ export async function login({ request }) {
 }
 
 export function LoginPage() {
+
+    async function login(request) {
+        request.preventDefault();
+        console.log("submitted", request);
+        // let formData = await request.formData();
+
+        // // Intent is based on the button value
+        // // Differentiates between login and register
+        // let intent = formData.get("intent");
+        // console.log("Sending ", formData.get("username"), "pw", formData.get("password"));
+        // let resource = (intent === "login") ? "/login" : "/register";
+
+        // // Either login or register depending on request. Both are handled the same way. 
+        // const response = await fetch(resource, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({ username: formData.get("username"), password: formData.get("password") }),
+        // })
+        // if (response.status === 201) {
+        //     console.log("good");
+        //     return redirect("/browser");
+        // } else {
+        //     // Login failed for some reason. Return the text error message to be displayed.
+        //     return await response.text();
+        // }
+    }
 
     return (<>
         <Form id="login-form" method="post">

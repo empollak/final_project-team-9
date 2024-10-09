@@ -21,7 +21,7 @@ export default function ioHandler(io) {
 
       // if less than two players, join game
       if (games[gameCode].players.length < games[gameCode].maxPlayers) {
-        games[gameCode].players.push(socket.id);
+        games[gameCode].players.push(username);
         socket.gameCode = gameCode; // legal?
 
         // tell user they successfully joined
@@ -52,7 +52,7 @@ export default function ioHandler(io) {
       let gameCode = socket.gameCode;
       console.log("Handling disconnect, gameCode", gameCode);
       if (gameCode && games[gameCode]) {
-        const index = games[gameCode].players.indexOf(socket.id);
+        const index = games[gameCode].players.indexOf(socket.username);
         if (index > -1) {
           socket.leave(gameCode);
           io.to(gameCode).emit("gameOver", "Other user disconnected");
@@ -84,13 +84,25 @@ export default function ioHandler(io) {
       console.log("Sending board for game ", gameCode, "only move ", games[gameCode].board.onlyMove);
       io.to(gameCode).emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer, games[gameCode].board.onlyMove);
       if (games[gameCode].board.winner) {
+        let winner = socket.username;
+        let loser = games[gameCode].players.find((player) => {
+          console.log("player", player);
+          return player !== winner
+        });
+        console.log("winner", winner, "loser", loser);
         socket.emit("gameOver", "You win!");
         socket.to(gameCode).emit("gameOver", "You lose!");
-        // if (await statsDB.findOne({ username: socket.username })) {
-        //   statsDB.updateOne({ username: socket.username }, { $inc: { wins: 1 } })
-        // } else {
-        //   statsDB.insertOne({ username: socket.username, wins: 1, losses: 0 })
-        // }
+        if (await statsDB.findOne({ username: winner })) {
+          await statsDB.updateOne({ username: winner }, { $inc: { wins: 1 } })
+        } else {
+          await statsDB.insertOne({ username: winner, wins: 1, losses: 0 })
+        }
+
+        if (await statsDB.findOne({ username: loser })) {
+          await statsDB.updateOne({ username: loser }, { $inc: { losses: 1 } })
+        } else {
+          await statsDB.insertOne({ username: loser, wins: 0, losses: 1 })
+        }
 
 
         delete games[gameCode];

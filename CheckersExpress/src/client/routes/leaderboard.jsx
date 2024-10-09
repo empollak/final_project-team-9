@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router-dom";
 import "./leaderboard.css"
 
 export default function Leaderboard() {
-    const data = useLoaderData().data;
+    const data = useLoaderData().data.stats;
     console.log("data", data);
 
     return (

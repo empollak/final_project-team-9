@@ -9,6 +9,8 @@ import { Board } from "../../shared/GameModel";
 
 export default function Browser() {
     const socket = useLoaderData().io;
+    const username = useLoaderData().data.username;
+    const navigate = useNavigate();
     // const navigate = useNavigate();
     const [gameCode, setGameCode] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
@@ -21,8 +23,8 @@ export default function Browser() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Joining game ", gameCode);
-        socket.emit("joinGame", gameCode);
+        console.log("Joining game ", gameCode, "username", username);
+        socket.emit("joinGame", gameCode, username);
     };
 
     const backToBrowser = (e) => {
@@ -32,6 +34,8 @@ export default function Browser() {
         setGameOverReason("");
         setGameJoined(false);
         setGameCode("");
+        // Get it to refresh the data
+        navigate("/browser");
     }
 
     useEffect(() => {

@@ -62,6 +62,8 @@ app.post("/register", async (req, res) => {
         username: username,
         password: hashedPassword,
       });
+      req.session.login = true;
+      req.session.userId = username;
       res.status(201).send("User registered successfully.");
     } catch (error) {
       console.error("Error during registration:", error);
@@ -83,7 +85,7 @@ app.post("/login", async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
           req.session.login = true;
-          req.session.userId = user._id.toString();
+          req.session.userId = username;
           res.status(201).send(); // correct credentials
         } else {
           console.log("Incorrect credentials");
@@ -125,11 +127,13 @@ app.get("/checkAuth", requireAuth, (req, res) => {
 
 export const statsDB = client.db("checkers").collection("stats");
 app.get("/data", requireAuth, async (req, res) => {
-  res.status(200).json((await statsDB.find().toArray()).sort((a, b) => {
-    a.winrate = a.wins / (a.wins + a.losses);
-    b.winrate = b.wins / (b.wins + b.losses);
-    return b.winrate - a.winrate;
-  }));
+  res.status(200).json({
+    stats: (await statsDB.find().toArray()).sort((a, b) => {
+      a.winrate = a.wins / (a.wins + a.losses);
+      b.winrate = b.wins / (b.wins + b.losses);
+      return b.winrate - a.winrate;
+    }), username: req.session.userId
+  });
 })
 
 server.listen(3000, () =>
