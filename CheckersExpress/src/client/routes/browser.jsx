@@ -49,6 +49,7 @@ export default function Browser() {
             // Joined the game!
             setGameJoined(true);
             setGameCode(gameCode);
+            setBoard(new Board(gameCode));
         });
 
         socket.on("gameStarted", (player) => {
