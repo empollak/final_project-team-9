@@ -20,6 +20,15 @@ const router = createBrowserRouter([
     element: <LoginPage />,
     errorElement: <ErrorPage />,
     action: login,
+    loader: async () => {
+      const response = await fetch("/data", {
+        method: "GET",
+      });
+      if (response.ok) {
+        return redirect("/browser");
+      }
+      return null;
+    }
   },
   {
     path: "/browser",
