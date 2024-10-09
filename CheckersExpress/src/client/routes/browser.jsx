@@ -27,6 +27,12 @@ export default function Browser() {
         socket.emit("joinGame", gameCode, username);
     };
 
+    const createGame = (e) => {
+        e.preventDefault();
+        console.log("Creating game");
+        socket.emit("createGame", username)
+    }
+
     const backToBrowser = (e) => {
         e.preventDefault();
         console.log("Back to browser!");
@@ -51,8 +57,9 @@ export default function Browser() {
             setGameStarted(true);
         })
 
-        socket.on("gameFull", ({ gameCode }) => {
-            alert(`Game ${gameCode} is full. Please try another game code.`);
+        socket.on("gameJoinError", (gameCode, reason) => {
+            alert(`Could not join game ${gameCode}. ${reason}`);
+            // alert(`Game ${gameCode} is full. Please try another game code.`);
         });
 
         socket.on("alreadyInGame", () => {
@@ -69,6 +76,7 @@ export default function Browser() {
             socket.off("gameOver");
             socket.off("gameStarted");
             socket.off("alreadyInGame");
+            socket.off("gameJoinError");
         };
     }, [socket]);
 
@@ -82,6 +90,7 @@ export default function Browser() {
                 </> :
                 !gameJoined ? <>
                     <h1>Welcome to Checkers!</h1>
+                    <button onClick={createGame}>Create Game</button>
                     <h2>Enter a game code to join:</h2>
                     <Form onSubmit={handleSubmit}>
                         <input

@@ -3,6 +3,42 @@ import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt,
 import { Token, Board } from "../shared/GameModel.js"
 import { statsDB } from "./main.js";
 
+function joinGame(gameCode, socket, username, games) {
+  if (!games[gameCode]) {
+    console.log("Game does not exist", gameCode);
+    socket.emit("gameJoinError", gameCode, "Game does not exist");
+    return;
+  }
+  // if less than two players, join game
+  if (games[gameCode].players.length < games[gameCode].maxPlayers) {
+    console.log("player0", games[gameCode].players[0], " joining game ", gameCode);
+    if (games[gameCode].players[0] === username) {
+      console.log("already in game");
+      socket.emit("alreadyInGame");
+      return;
+    }
+    games[gameCode].players.push(username);
+    socket.gameCode = gameCode; // legal?
+
+    // tell user they successfully joined
+    socket.join(gameCode);
+    console.log(socket.rooms);
+    socket.emit("gameJoined", gameCode);
+
+    // Start the game if it is full!
+    if (games[gameCode].players.length == games[gameCode].maxPlayers) {
+      console.log("Starting game", gameCode);
+      // Tell the other player they are red
+      socket.to(gameCode).emit("gameStarted", "r");
+      socket.emit("gameStarted", "b");
+    }
+  } else {
+    // tell user the game is full
+    socket.emit("gameJoinError", gameCode, "Game is full");
+    console.log(`Game ${gameCode} is full`);
+  }
+}
+
 export default function ioHandler(io) {
   const games = {}; // hold all our games
   io.on('connection', (socket) => {
@@ -10,43 +46,23 @@ export default function ioHandler(io) {
     console.log('A user connected to the socket');
 
     // Game Joining
-    socket.on("joinGame", (msg, username) => {
-      let gameCode = msg;
-      console.log("JoinGame request from id", socket.id, "and game code", gameCode, " username ", username);
+    socket.on("createGame", (username) => {
+      let gameCode = Math.round((Math.random() * 99998) + 1).toString();
+      console.log("Creating game request from id", socket.id, "and game code", gameCode, " username ", username);
       socket.username = username;
-      // if game not full, make a new game
-      if (!games[gameCode]) {
-        games[gameCode] = { players: [], maxPlayers: 2, board: new Board() };
+      if (games[gameCode]) {
+        socket.emit("gameJoinError", gameCode, "You rolled the one in a million and that game already exists. Try again.");
+        return;
       }
-
-      // if less than two players, join game
-      if (games[gameCode].players.length < games[gameCode].maxPlayers) {
-        console.log("player0", games[gameCode].players[0]);
-        if (games[gameCode].players[0] === username) {
-          console.log("already in game");
-          socket.emit("alreadyInGame");
-          return;
-        }
-        games[gameCode].players.push(username);
-        socket.gameCode = gameCode; // legal?
-
-        // tell user they successfully joined
-        socket.join(gameCode);
-        socket.emit("gameJoined", gameCode);
-
-        // Start the game if it is full!
-        if (games[gameCode].players.length == games[gameCode].maxPlayers) {
-          console.log("Starting game", gameCode);
-          // Tell the other player they are red
-          socket.to(gameCode).emit("gameStarted", "r");
-          socket.emit("gameStarted", "b");
-        }
-      } else {
-        // tell user the game is full
-        socket.emit("gameFull", { gameCode });
-        console.log(`Game ${gameCode} is full`);
-      }
+      // Create the game
+      games[gameCode] = { players: [], maxPlayers: 2, board: new Board() };
+      joinGame(gameCode, socket, username, games);
     });
+
+    socket.on("joinGame", (gameCode, username) => {
+      console.log("got join game request", username, gameCode);
+      joinGame(gameCode, socket, username, games);
+    })
 
     // Rebrodcast count update to relevant sockets (except the one it came from)
     socket.on("count", (gameCode, count) => {
