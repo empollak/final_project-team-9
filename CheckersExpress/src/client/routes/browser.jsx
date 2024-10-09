@@ -55,6 +55,10 @@ export default function Browser() {
             alert(`Game ${gameCode} is full. Please try another game code.`);
         });
 
+        socket.on("alreadyInGame", () => {
+            alert("You are already in this game!");
+        })
+
         socket.on("gameOver", (reason) => {
             setGameOverReason(reason);
         });
@@ -62,6 +66,9 @@ export default function Browser() {
         return () => {
             socket.off("gameJoined");
             socket.off("gameFull");
+            socket.off("gameOver");
+            socket.off("gameStarted");
+            socket.off("alreadyInGame");
         };
     }, [socket]);
 

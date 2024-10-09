@@ -21,6 +21,12 @@ export default function ioHandler(io) {
 
       // if less than two players, join game
       if (games[gameCode].players.length < games[gameCode].maxPlayers) {
+        console.log("player0", games[gameCode].players[0]);
+        if (games[gameCode].players[0] === username) {
+          console.log("already in game");
+          socket.emit("alreadyInGame");
+          return;
+        }
         games[gameCode].players.push(username);
         socket.gameCode = gameCode; // legal?
 
