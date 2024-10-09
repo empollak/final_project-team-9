@@ -46,6 +46,7 @@ export class Board {
     currentPlayer;
     turnCount;
     winner;
+    onlyMove;
 
     constructor() {
         this.boardState = [];
@@ -53,6 +54,7 @@ export class Board {
         this.currentPlayer = "b";
         this.turnCount = 0;
         this.winner = null;
+        this.onlyMove = null;
         this.resetBoard();
     };
 
@@ -62,6 +64,8 @@ export class Board {
         newBoard.currentPlayer = this.currentPlayer;
         newBoard.turnCount = this.turnCount;
         newBoard.winner = this.winner;
+        // Will be set to a token if that token is the only one that is allowed to move (during chain)
+        newBoard.onlyMove = this.onlyMove;
         return newBoard;
     }
 

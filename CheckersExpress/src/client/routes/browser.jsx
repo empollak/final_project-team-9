@@ -13,6 +13,7 @@ export default function Browser() {
     const [gameCode, setGameCode] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [gameJoined, setGameJoined] = useState(false);
+    const [gameOverReason, setGameOverReason] = useState("");
     const [board, setBoard] = useState(new Board());
     const [player, setPlayer] = useState("");
     // const board = new Board();
@@ -23,6 +24,15 @@ export default function Browser() {
         console.log("Joining game ", gameCode);
         socket.emit("joinGame", gameCode);
     };
+
+    const backToBrowser = (e) => {
+        e.preventDefault();
+        console.log("Back to browser!");
+        setGameStarted(false);
+        setGameOverReason("");
+        setGameJoined(false);
+        setGameCode("");
+    }
 
     useEffect(() => {
         socket.on("gameJoined", (gameCode) => {
@@ -41,6 +51,10 @@ export default function Browser() {
             alert(`Game ${gameCode} is full. Please try another game code.`);
         });
 
+        socket.on("gameOver", (reason) => {
+            setGameOverReason(reason);
+        });
+
         return () => {
             socket.off("gameJoined");
             socket.off("gameFull");
@@ -50,23 +64,29 @@ export default function Browser() {
     return (
         <>
             <LogoutButton socket={socket}></LogoutButton>
-            {!gameJoined ? <>
-                <h1>Welcome to Checkers!</h1>
-                <h2>Enter a game code to join:</h2>
-                <Form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Game code"
-                        value={gameCode}
-                        onChange={(e) => setGameCode(e.target.value)}
-                    />
-                    <button type="submit">Submit</button>
-                </Form>
-                <br />
-                <h2>Leaderboard</h2>
-                <Leaderboard />
+            {gameOverReason ?
+                <>
+                    <h1>{gameOverReason}</h1>
+                    <button onClick={backToBrowser}>Back to browser</button>
+                </> :
+                !gameJoined ? <>
+                    <h1>Welcome to Checkers!</h1>
+                    <h2>Enter a game code to join:</h2>
+                    <Form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Game code"
+                            value={gameCode}
+                            onChange={(e) => setGameCode(e.target.value)}
+                        />
+                        <button type="submit">Submit</button>
+                    </Form>
+                    <br />
+                    <h2>Leaderboard</h2>
+                    <Leaderboard />
 
-                <br></br></> : gameStarted ? <GameBoard board={board} socket={socket} setBoard={setBoard} player={player} /> : <h1>Waiting for opponent. Game Code: {gameCode}</h1>}
+                    <br></br></> :
+                    gameStarted ? <GameBoard board={board} socket={socket} setBoard={setBoard} player={player} /> : <h1>Waiting for opponent. Game Code: {gameCode}</h1>}
 
         </>
     )

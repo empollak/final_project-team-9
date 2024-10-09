@@ -123,7 +123,7 @@ app.get("/checkAuth", requireAuth, (req, res) => {
   res.status(200).send();
 })
 
-const statsDB = client.db("checkers").collection("stats");
+export const statsDB = client.db("checkers").collection("stats");
 app.get("/data", requireAuth, async (req, res) => {
   res.status(200).json((await statsDB.find().toArray()).sort((a, b) => {
     a.winrate = a.wins / (a.wins + a.losses);

@@ -5,6 +5,7 @@ import { Token } from "../../shared/GameModel";
 //game rendering
 
 export default function GameBoard({ board, socket, player, setBoard }) {
+    // selected = {row: #, col: #}
     const [selected, setSelected] = useState({});
 
     useEffect(() => {
@@ -16,7 +17,7 @@ export default function GameBoard({ board, socket, player, setBoard }) {
         // alert("Game Over, " + winner + " Wins!")
     }, [board.winner])
 
-    socket.on("board", (boardState, currentPlayer) => {
+    socket.on("board", (boardState, currentPlayer, onlyMove) => {
         board.boardState = boardState.map((token) => {
             if (token) {
                 return new Token(token.index, token.isMonarch, token.color);
@@ -24,6 +25,11 @@ export default function GameBoard({ board, socket, player, setBoard }) {
             return null;
         })
         board.currentPlayer = currentPlayer;
+        board.onlyMove = onlyMove;
+        if (onlyMove) {
+            const pos = indexToPosition(onlyMove.index);
+            setSelected({ row: pos[0], col: pos[1] });
+        }
         console.log("Updated board state", boardState);
         console.log("board copy", board.copy());
         setBoard(board.copy());
@@ -32,6 +38,13 @@ export default function GameBoard({ board, socket, player, setBoard }) {
     const clickSquare = function (row, col) {
         console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col), " current player ", board.currentPlayer, " i am player ", player);
         if (tokenAt(board, row, col)?.color === (board.currentPlayer) && board.currentPlayer == player) {
+            console.log("only move ", indexToPosition(board.onlyMove?.index), " row col ", [row, col], " bool  ", indexToPosition(board.onlyMove?.index)[0] === row && indexToPosition(board.onlyMove?.index)[1] === col);
+
+            // Check if there is a restriction on movement and, if there is, that the user has clicked on that tile
+            if (board.onlyMove && !(indexToPosition(board.onlyMove?.index)[0] === row && indexToPosition(board.onlyMove?.index)[1] === col)) {
+                console.log("Was not only move. Only move: ", board.onlyMove);
+                return;
+            }
             setSelected({ row, col });
             return;
         }

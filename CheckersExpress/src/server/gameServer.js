@@ -1,6 +1,7 @@
 // import { app, io, server } from "./main"
 import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt, makeMove } from "../shared/GameController.js"
 import { Token, Board } from "../shared/GameModel.js"
+import { statsDB } from "./main.js";
 
 export default function ioHandler(io) {
   const games = {}; // hold all our games
@@ -9,9 +10,10 @@ export default function ioHandler(io) {
     console.log('A user connected to the socket');
 
     // Game Joining
-    socket.on("joinGame", (msg) => {
+    socket.on("joinGame", (msg, username) => {
       let gameCode = msg;
-      console.log("JoinGame request from id", socket.id, "and game code", gameCode);
+      console.log("JoinGame request from id", socket.id, "and game code", gameCode, " username ", username);
+      socket.username = username;
       // if game not full, make a new game
       if (!games[gameCode]) {
         games[gameCode] = { players: [], maxPlayers: 2, board: new Board() };
@@ -68,7 +70,7 @@ export default function ioHandler(io) {
       socket.emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer);
     });
 
-    socket.on("makemove", (msg) => {
+    socket.on("makemove", async (msg) => {
       let gameCode = socket.gameCode;
       console.log("got makemove", msg);
       // When sent a move, update the board and send new board accordingly
@@ -79,8 +81,20 @@ export default function ioHandler(io) {
         console.log("Move selected an invalid piece");
       }
 
-      console.log("Sending board for game ", gameCode);
-      io.to(gameCode).emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer);
+      console.log("Sending board for game ", gameCode, "only move ", games[gameCode].board.onlyMove);
+      io.to(gameCode).emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer, games[gameCode].board.onlyMove);
+      if (games[gameCode].board.winner) {
+        socket.emit("gameOver", "You win!");
+        socket.to(gameCode).emit("gameOver", "You lose!");
+        // if (await statsDB.findOne({ username: socket.username })) {
+        //   statsDB.updateOne({ username: socket.username }, { $inc: { wins: 1 } })
+        // } else {
+        //   statsDB.insertOne({ username: socket.username, wins: 1, losses: 0 })
+        // }
+
+
+        delete games[gameCode];
+      }
 
       // OR, for lazy impl
       // io.to(gameCode).emit(msg)
