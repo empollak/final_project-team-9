@@ -41,8 +41,12 @@ export function LoginPage() {
 
     return (<>
         <Form id="login-form" method="post">
+            <h1>Checkers</h1>
+            <p>Log in or sign up!</p>
+            <br></br>
             <input type="text" placeholder="username" name="username" />
             <input type="password" placeholder="password" name="password" />
+            <br></br>
             <button type="submit" name="intent" value="register">Register</button>
             <button type="submit" name="intent" value="login">Log in</button>
             <p>{useActionData()}</p>
