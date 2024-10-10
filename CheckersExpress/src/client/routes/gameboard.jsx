@@ -4,9 +4,8 @@ import { availableMoves, indexToPosition, positionToIndex, isLegalMove, tokenAt,
 import { Token } from "../../shared/GameModel";
 //game rendering
 
-export default function GameBoard({ board, socket, player, setBoard }) {
+export default function GameBoard({ board, socket, player, setBoard, selected, setSelected }) {
     // selected = {row: #, col: #}
-    const [selected, setSelected] = useState({});
 
     useEffect(() => {
         board.selected = selected;
@@ -17,26 +16,12 @@ export default function GameBoard({ board, socket, player, setBoard }) {
         // alert("Game Over, " + winner + " Wins!")
     }, [board.winner])
 
-    socket.on("board", (boardState, currentPlayer, onlyMove) => {
-        board.boardState = boardState.map((token) => {
-            if (token) {
-                return new Token(token.index, token.isMonarch, token.color);
-            }
-            return null;
-        })
-        board.currentPlayer = currentPlayer;
-        board.onlyMove = onlyMove;
-        if (onlyMove) {
-            const pos = indexToPosition(onlyMove.index);
-            setSelected({ row: pos[0], col: pos[1] });
-        }
-        console.log("Updated board state", boardState);
-        console.log("board copy", board.copy());
-        setBoard(board.copy());
-    })
-
     const clickSquare = function (row, col) {
         console.log("Square Clicked:", row, col, "Index of Square:", positionToIndex(row, col), " current player ", board.currentPlayer, " i am player ", player);
+        if (board.currentPlayer !== player) {
+            setSelected({});
+            return;
+        }
         if (tokenAt(board, row, col)?.color === (board.currentPlayer) && board.currentPlayer == player) {
             console.log("only move ", indexToPosition(board.onlyMove?.index), " row col ", [row, col], " bool  ", indexToPosition(board.onlyMove?.index)[0] === row && indexToPosition(board.onlyMove?.index)[1] === col);
 
@@ -85,28 +70,30 @@ export default function GameBoard({ board, socket, player, setBoard }) {
 
     // draw tokens
     return (
-        <div id="game" className={rotateClass}>
-            {
-                [...Array(8)].map((gridRow, rowIndex) => {
-                    return <div className="row" key={"row:" + rowIndex} style={{}}>
-                        {
-                            [...Array(8)].map((gridCell, colIndex) => {
-                                return <button className="square"
-                                    key={"row:" + rowIndex + ",col:" + colIndex}
-                                    onClick={() => clickSquare(rowIndex, colIndex)}
-                                    style={{
-                                        backgroundColor: squareColor(rowIndex, colIndex),
-                                    }}>
-                                    {tokenAt(board, rowIndex, colIndex) ?
-                                        <img className={"square" + " " + rotateClass}
-                                            src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
-                                </button>
-                            })
-                        }
-                    </div>
-                })
-            }
-        </div>
-
+        <>
+            <div id="game" className={rotateClass}>
+                {
+                    [...Array(8)].map((gridRow, rowIndex) => {
+                        return <div className="row" key={"row:" + rowIndex} style={{}}>
+                            {
+                                [...Array(8)].map((gridCell, colIndex) => {
+                                    return <button className="square"
+                                        key={"row:" + rowIndex + ",col:" + colIndex}
+                                        onClick={() => clickSquare(rowIndex, colIndex)}
+                                        style={{
+                                            backgroundColor: squareColor(rowIndex, colIndex),
+                                        }}>
+                                        {tokenAt(board, rowIndex, colIndex) ?
+                                            <img className={"square" + " " + rotateClass}
+                                                src={tokenAt(board, rowIndex, colIndex).imgSource()} /> : null}
+                                    </button>
+                                })
+                            }
+                        </div>
+                    })
+                }
+            </div>
+            <p>You are {player === "s" ? "Spectator" : player === "r" ? "Red" : "Black"}</p>
+        </>
     )
 }

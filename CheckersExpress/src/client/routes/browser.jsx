@@ -5,7 +5,7 @@ import LogoutButton from "../LogoutButton";
 import Game from "./game";
 import GameBoard from "./gameboard";
 import Leaderboard from "./leaderboard";
-import { Board } from "../../shared/GameModel";
+import { Board, Token } from "../../shared/GameModel";
 
 export default function Browser() {
     const socket = useLoaderData().io;
@@ -18,6 +18,7 @@ export default function Browser() {
     const [gameOverReason, setGameOverReason] = useState("");
     const [board, setBoard] = useState(new Board());
     const [player, setPlayer] = useState("");
+    const [selected, setSelected] = useState({});
     // const board = new Board();
 
 
@@ -71,6 +72,25 @@ export default function Browser() {
             setGameOverReason(reason);
         });
 
+        socket.on("board", (boardState, currentPlayer, onlyMove) => {
+            board.boardState = boardState.map((token) => {
+                if (token) {
+                    return new Token(token.index, token.isMonarch, token.color);
+                }
+                return null;
+            })
+            board.currentPlayer = currentPlayer;
+            board.onlyMove = onlyMove;
+            console.log("got board update with player ", currentPlayer, "board player ", board.currentPlayer);
+            if (onlyMove && board.currentPlayer === player) {
+                const pos = indexToPosition(onlyMove.index);
+                setSelected({ row: pos[0], col: pos[1] });
+            }
+            console.log("Updated board state", boardState);
+            console.log("board copy", board.copy());
+            setBoard(board.copy());
+        })
+
         return () => {
             socket.off("gameJoined");
             socket.off("gameFull");
@@ -86,7 +106,7 @@ export default function Browser() {
             <LogoutButton socket={socket}></LogoutButton>
             {gameOverReason ?
                 <>
-                    <h1>{gameOverReason}</h1>
+                    <h1>{player !== "s" ? gameOverReason : "Game over"}</h1>
                     <button onClick={backToBrowser}>Back to browser</button>
                 </> :
                 !gameJoined ? <>
@@ -107,7 +127,7 @@ export default function Browser() {
                     <Leaderboard />
 
                     <br></br></> :
-                    gameStarted ? <GameBoard board={board} socket={socket} setBoard={setBoard} player={player} /> : <h1>Waiting for opponent. Game Code: {gameCode}</h1>}
+                    gameStarted ? <GameBoard board={board} socket={socket} setBoard={setBoard} player={player} selected={selected} setSelected={setSelected} /> : <h1>Waiting for opponent. Game Code: {gameCode}</h1>}
 
         </>
     )

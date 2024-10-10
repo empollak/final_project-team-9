@@ -24,7 +24,6 @@ function joinGame(gameCode, socket, username, games, io) {
 
     // tell user they successfully joined
     socket.join(gameCode);
-    console.log(socket.rooms);
     socket.emit("gameJoined", gameCode);
 
     // Start the game if it is full!
@@ -32,13 +31,16 @@ function joinGame(gameCode, socket, username, games, io) {
       console.log("Starting game", gameCode);
       // Tell the other player they are red
       socket.to(gameCode).emit("gameStarted", "r");
-      socket.emit("gameStarted", "b");
+      socket.emit("gameStarted", "b")
       // io.to(gameCode).emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer, games[gameCode].board.onlyMove);
     }
   } else {
     // tell user the game is full
-    socket.emit("gameJoinError", gameCode, "Game is full");
-    console.log(`Game ${gameCode} is full`);
+    socket.join(gameCode);
+    socket.emit("gameJoined", gameCode);
+    socket.emit("gameStarted", "s");
+    socket.emit("board", games[gameCode].board.boardState, games[gameCode].board.currentPlayer, games[gameCode].board.onlyMove);
+
   }
 }
 
@@ -58,7 +60,7 @@ export default function ioHandler(io) {
         return;
       }
       // Create the game
-      games[gameCode] = { players: [], maxPlayers: 2, board: new Board() };
+      games[gameCode] = { players: [], maxPlayers: 2, board: new Board(), sockets: [] };
       joinGame(gameCode, socket, username, games, io);
     });
 
