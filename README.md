@@ -2,6 +2,7 @@
 Emma Pollak, Kruti Shah, Kay Siegall, Ian Poulsen, Thei Riley
 
 https://team-9-final-project.glitch.me
+https://youtu.be/CI-XPF1pf9A
 
 ## Project Description
 We created a multiplayer checkers game that supports two players. Users must first sign up or log in, then they will be taken to a lobby. From this page, users may create a new game or join an existing game by entering a game code.
@@ -26,4 +27,4 @@ We had some challenges with time management because we're busy people and it's f
 - Thei Riley: Game logic, board design and storage
 
 ## Link to Project Video
-insert video link
+https://youtu.be/CI-XPF1pf9A
