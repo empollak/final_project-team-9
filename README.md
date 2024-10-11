@@ -2,6 +2,7 @@
 Emma Pollak, Kruti Shah, Kay Siegall, Ian Poulsen, Thei Riley
 
 https://team-9-final-project.glitch.me
+
 https://youtu.be/CI-XPF1pf9A
 
 ## Project Description
